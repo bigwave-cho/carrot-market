@@ -5,14 +5,34 @@ const Home: NextPage = () => {
     <div className="grid min-h-screen gap-10 bg-slate-400 py-20 px-20">
       <div className="rounded-3xl bg-white p-6 shadow-xl">
         <span className="text-3xl font-semibold">Select Item</span>
-        <div className="my-2 flex justify-between">
-          <span className="text-gray-500">Grey Chair</span>
-          <span className=" font-semibold">$19</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Grey Chair</span>
-          <span className=" font-semibold">$19</span>
-        </div>
+        <ul>
+          {[1, 2, 3, 4, 5].map((i) => {
+            return (
+              <div
+                key={i}
+                className="my-2 flex justify-between first:bg-blue-50 last:bg-blue-50 only:bg-red-500 odd:bg-blue-500 even:bg-yellow-500"
+                // * only: 는 chile가 하나일 때 작동함.
+              >
+                <span className="text-gray-500">Grey Chair</span>
+                <span className=" font-semibold">$19</span>
+              </div>
+            );
+          })}
+        </ul>
+        <ul>
+          {['a', 'b', 'c', ''].map((c, i) => {
+            return (
+              <li
+                className="bg-red-500 py-2 empty:hidden"
+                //empty:hidden 은 null or undefined 요소가 들어오면
+                // display:none처럼 작동. (empty == null or undefined)
+                key={i}
+              >
+                {c}
+              </li>
+            );
+          })}
+        </ul>
         <div className="mt-2 flex justify-between border-t-2 border-dashed pt-2">
           <span>Total</span>
           <span className=" font-semibold">$10</span>
@@ -58,9 +78,9 @@ const Home: NextPage = () => {
           <span className="text-xs text-gray-500">Chair</span>
           <div className="mt-3 mb-5 flex items-center justify-between">
             <div className="space-x-2">
-              <button className="h-5 w-5 rounded-full bg-yellow-500" />
-              <button className="h-5 w-5 rounded-full bg-indigo-500" />
-              <button className="h-5 w-5 rounded-full bg-teal-500" />
+              <button className="h-5 w-5 rounded-full bg-yellow-500 ring-yellow-500 ring-offset-2 transition focus:ring-2" />
+              <button className="h-5 w-5 rounded-full bg-indigo-500 ring-indigo-500 ring-offset-2 transition focus:ring-2" />
+              <button className="h-5 w-5 rounded-full bg-teal-500 ring-teal-500 ring-offset-2 transition focus:ring-2" />
             </div>
             <div className="flex items-center space-x-5">
               <button className="flex aspect-square w-8 items-center justify-center rounded-lg bg-blue-200  text-xl text-gray-500">
