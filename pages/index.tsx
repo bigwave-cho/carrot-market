@@ -1,28 +1,27 @@
 import { NextPage } from 'next';
 
 const Home: NextPage = () => {
-  // Responsive 적용해보자
-  // 중요: 모바일부터 차례대로 늘려가면서 breakpoint를 걸면서 스타일을 수정해주면 되겠다.
-  /*
-  lg:grid-cols-2 xl:grid-cols-3
-  place-content-center(gird의 속성) 모든 컨텐츠 가운데로.
-  하지만 이 속성이 mobile에 적용되면 이상해지니까 xl로 브레이크 포인트 걸자.
-  
-  mobile에서 portrait / landscape 도 있음.
-  */
-
+  //Dark mode
+  //Darkmode는 기본적으로 OS 설정을 따라감.
+  //react로 직접 변경하고 싶다면 tailwind.config.js에서 수정이 필요함.
+  //media를 class로 수정하고 dark에 커서를 올려 확인해보면
+  // @media query가 적용되지 않음을 알 수 있다.
+  // 대신 css에서 .dark .dark\:bg-black 을 확인 가능한데
+  // 부모요소의 class에 dark가 생기면 dark속성이 적용됨을 의미한다.
   return (
-    <div className="grid min-h-screen gap-10 bg-slate-400 py-20 px-20 lg:grid-cols-2 xl:grid-cols-3 xl:place-content-center">
-      <div className="flex flex-col justify-between rounded-3xl bg-white p-6 shadow-xl">
-        <span className="text-2xl font-semibold">Select Item</span>
+    <div className="dark grid min-h-screen gap-10 bg-slate-400 py-20 px-20 lg:grid-cols-2 xl:grid-cols-3 xl:place-content-center">
+      <div className="flex flex-col justify-between rounded-3xl bg-white p-6 shadow-xl dark:bg-black">
+        <span className="text-2xl font-semibold dark:text-white">
+          Select Item
+        </span>
         <ul>
           <div className="my-2 flex justify-between ">
-            <span className="text-gray-500">Grey Chair</span>
-            <span className="font-semibold">$19</span>
+            <span className="text-gray-500 dark:text-gray-100">Grey Chair</span>
+            <span className="font-semibold dark:text-white">$19</span>
           </div>
           <div className="my-2 flex justify-between">
-            <span className="text-gray-500">Grey Chair</span>
-            <span className="font-semibold">$19</span>
+            <span className="text-gray-500 dark:text-gray-100">Grey Chair</span>
+            <span className="font-semibold dark:text-white">$19</span>
           </div>
         </ul>
 
@@ -31,10 +30,13 @@ const Home: NextPage = () => {
           <span className="font-semibold">$10</span>
         </div>
         <button
-          className="mx-auto mt-5 block w-3/4
-          rounded-xl bg-blue-500 p-3 text-center text-white 
-          hover:bg-teal-500 hover:text-black
-          focus:bg-red-500 active:bg-yellow-500
+          className=" mx-auto mt-5 block
+          w-3/4 rounded-xl bg-blue-500 p-3 text-center 
+          text-white hover:bg-teal-500
+          hover:text-black focus:bg-red-500
+          active:bg-yellow-500
+          dark:border dark:border-white dark:bg-black
+          dark:hover:bg-white dark:hover:text-black
           "
         >
           Checkout
