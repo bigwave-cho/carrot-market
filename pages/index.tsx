@@ -9,7 +9,7 @@ https://heroicons.com/  (무료 아이콘들)
 const Home: NextPage = () => {
   return (
     <Layout title="Home" hasTabBar>
-      <div className="flex flex-col space-y-5">
+      <div className="flex flex-col space-y-5 py-4">
         {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((_, i) => (
           <div
             key={i}
