@@ -1,13 +1,30 @@
 import { NextPage } from 'next';
 
 const Home: NextPage = () => {
-  //Dark mode
-  //Darkmode는 기본적으로 OS 설정을 따라감.
-  //react로 직접 변경하고 싶다면 tailwind.config.js에서 수정이 필요함.
-  //media를 class로 수정하고 dark에 커서를 올려 확인해보면
-  // @media query가 적용되지 않음을 알 수 있다.
-  // 대신 css에서 .dark .dark\:bg-black 을 확인 가능한데
-  // 부모요소의 class에 dark가 생기면 dark속성이 적용됨을 의미한다.
+  //tailwind3에서 변화
+  /*
+  Migrating to the JIT engine
+
+2021년 3월에 발표한 새로운 Just-in-Time 엔진이 Tailwind CSS v3.0의 클래식 엔진을 대체했습니다. 새로운 엔진은 프로젝트에 필요한 스타일을 주문형으로 생성합니다.
+
+Tailwind CSS v3.0 이전: 거대한 CSS파일을 생성하고, 그 파일에 이미 정의해놓은 클래스들을 가져와 사용하는 방식.
+대략 20만줄 정도 되는 클래스로 가득찬 파일을 가져와 개발 단계에서 사용하기 때문에 매우 무겁고, 배포 전에는 purge를 해줘야 해서 번거로움
+
+Tailwind CSS v3.0이후: 사용자가 사용하는 스타일들만 그때 그때 생성해서 사용하는 방식. 여러 클래스들을 조합해서 사용할 수 있고, 매우 가볍고, 배포 전 purge를 해주지 않아도 되서 편함
+Just-In-Time!!!!!
+
+또한 원래는 테일윈드 프레임워크에 지배당하는 구조라 규격 외 스타일을 적용하기 위해서는
+style={{~~}} 이런식으로 해야했지만 JIT 덕분에
+
+text-[1000px] <- 이런식으로 custom class를 생성해낼 수도 있음.
+
+- 텍스트 color 예
+text-[#000]
+
+- 배경 이미지 적용 예
+bg-[url('/vercel.svg')]
+https://tailwindcss.com/docs/upgrade-guide#migrating-to-the-jit-engine
+  */
   return (
     <div className="dark grid min-h-screen gap-10 bg-slate-400 py-20 px-20 lg:grid-cols-2 xl:grid-cols-3 xl:place-content-center">
       <div className="flex flex-col justify-between rounded-3xl bg-white p-6 shadow-xl dark:bg-black">
