@@ -1,10 +1,4 @@
 import { NextPage } from 'next';
-/*
-aspect video : 높이가 화면 비율에 맞춰 자동으로 맞춰짐. ( 16:9)
-asepct square : 정사각형.
-
-home index의 버튼 재사용
-*/
 
 const StreamDetail: NextPage = () => {
   return (

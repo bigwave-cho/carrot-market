@@ -1,7 +1,5 @@
 import { NextPage } from 'next';
 
-//item upload나 양식이 비슷해서 복붙해왔음.
-
 const Create: NextPage = () => {
   return (
     <div className="space-y-5 px-4 py-10">

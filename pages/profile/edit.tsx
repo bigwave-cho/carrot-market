@@ -1,8 +1,5 @@
 import type { NextPage } from 'next';
 
-// 이제 거의 다른 컴포넌트의 요소들을 복붙하는 빈도가 많아졌음
-// 곧 재사용을 많이 하는 컴포넌트를 따로 빼둬야할 필요가 있다.
-
 const EditProfile: NextPage = () => {
   return (
     <div className="space-y-4 py-10 px-4">
