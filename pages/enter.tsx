@@ -3,10 +3,7 @@ import { useState } from 'react';
 function cls(...classnames: string[]) {
   return classnames.join(' ');
 }
-// Tailwind 연습해보자
-// Auth Part
-// 1번 삼항조건식 말고 함수로 tailwind modifier 조작하기(email, phone 선택 버튼)
-// 2번 tailwind form 플러그인 사용해보기(npm install -D @tailwindcss/forms)
+
 export default function Enter() {
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const onEmailClick = () => setMethod('email');
