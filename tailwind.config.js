@@ -11,5 +11,5 @@ module.exports = {
   },
   // 기본값 media(컴 설정에 따라) or class(수동변경하곺다)
   darkMode: 'media',
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 };
