@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 
-const Love: NextPage = () => {
+const Loved: NextPage = () => {
   return (
     <div className="flex flex-col space-y-5 py-10">
       {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((_, i) => (
@@ -60,4 +60,4 @@ const Love: NextPage = () => {
   );
 };
 
-export default Love;
+export default Loved;
