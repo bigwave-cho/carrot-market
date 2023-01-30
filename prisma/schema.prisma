@@ -1,30 +1,44 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-// schema.prisma 파일은 프리즈마의 정수
+
+// database 구조 이해하기
+
+// User DB:
+// id:1 username:nico
+
+// Comments DB:
+// id:1 text:wow! user: 1 -> (Users DB:1)
+
+// 댓글을 생성하면 id가 부여되고 user는 해당 글을 쓴 유저의 id와 연결됨.
+
+// Comments DB:
+// id:1 text:wow! user:(Users DB:5)
+
+//기존 관계형 데이터베이스
+//: 댓글 생성시  무조건 해당 foreign key에 해당하는 데이터가 존재해야함. 위 경우는 해당 fk가 없어서 불가
+
+//플레닛사이드는 작동함.(vitess : 확장성에 특화)
+
+// 이렇게 외부키에 상관없이 작동(데이터베이스에서 오류X)이 좋은 것만은 아니기에
+// 프리즈마를 이용해서 오류를 확인하는 작업을 추가할 것임.
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["referentialIntegrity"]  - deprecated 되었음.
 }
-//step2. db 공급자 정하기.
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  // referentialIntegrity를 대체 (기능 : 다른 객체에 연결될 때 그 객체가 존재하길 희망)
+  relationMode = "prisma"
 }
 
-// 모델 만들기
 model User{
-  // id는 int타입이고 @id로 프리즈마에게 id임을 알려줌
  id       Int       @id @default(autoincrement())
- // phone은 옵션이지만 유닠
  phone    Int?      @unique
  email    String?    @unique
  name     String 
  avatar   String?
- //생성 날짜 now() 메서드가 지금 날짜를 불러옴
  createAt DateTime  @default(now())
- //유저가 업뎃될 때마다 field의 변화를 prisma에 알려줌
  updatedAt DateTime  @updatedAt
 }
-
-//프리즈마는 이 파일을 통해 JS,TS 클라이언트를 생성해주고
-//데이터베이스에 변경점을 deploy함.
