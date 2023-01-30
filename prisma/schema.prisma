@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// schema.prisma 파일은 프리즈마의 정수
+
+generator client {
+  provider = "prisma-client-js"
+}
+//step2. db 공급자 정하기.
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 모델 만들기
+model User{
+  // id는 int타입이고 @id로 프리즈마에게 id임을 알려줌
+ id       Int       @id @default(autoincrement())
+ // phone은 옵션이지만 유닠
+ phone    Int?      @unique
+ email    String?    @unique
+ name     String 
+ avatar   String?
+ //생성 날짜 now() 메서드가 지금 날짜를 불러옴
+ createAt DateTime  @default(now())
+ //유저가 업뎃될 때마다 field의 변화를 prisma에 알려줌
+ updatedAt DateTime  @updatedAt
+}
+
+//프리즈마는 이 파일을 통해 JS,TS 클라이언트를 생성해주고
+//데이터베이스에 변경점을 deploy함.
