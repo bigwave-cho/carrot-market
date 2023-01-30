@@ -32,7 +32,9 @@ export default function Layout({
             &larr;
           </span>
         ) : null}
-        {title ? <span>{title}</span> : null}
+        {title ? (
+          <span className={cls(canGoBack ? 'mx-auto' : '', '')}>{title}</span>
+        ) : null}
       </div>
       <div
         //Home index에서 hasTabBar를 넘겨주고 있기 때문에 pb-16이 적용되는 모습이다.

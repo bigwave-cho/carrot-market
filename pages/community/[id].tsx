@@ -1,8 +1,11 @@
+import Button from '@/components/button';
+import Layout from '@/components/layout';
+import TextArea from '@/components/textarea';
 import type { NextPage } from 'next';
 
 const CommunityPostDetail: NextPage = () => {
   return (
-    <div>
+    <Layout canGoBack>
       <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
         동네질문
       </span>
@@ -17,8 +20,8 @@ const CommunityPostDetail: NextPage = () => {
       </div>
       <div>
         <div className="mt-2 px-4 text-gray-700">
-          <span className="font-medium text-orange-500">Q.</span> What is the
-          best mandu restaurant?
+          <span className="font-medium text-orange-500">Q.</span>
+          만두 맛집 추천점
         </div>
         <div className="mt-3 flex w-full space-x-5 border-t border-b-[2px] px-4 py-2.5  text-gray-700">
           <span className="flex items-center space-x-2 text-sm">
@@ -65,23 +68,20 @@ const CommunityPostDetail: NextPage = () => {
               Steve Jebs
             </span>
             <span className="block text-xs text-gray-500 ">2시간 전</span>
-            <p className="mt-2 text-gray-700">
-              The best mandu restaurant is the one next to my house.
-            </p>
+            <p className="mt-2 text-gray-700">비비고 드십쇼.</p>
           </div>
         </div>
       </div>
       <div className="px-4">
-        <textarea
-          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 "
-          rows={4}
-          placeholder="Answer this question!"
+        <TextArea
+          name="description"
+          required
+          placeholder="질문에 답을 달아주세요!"
         />
-        <button className="mt-2 w-full rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ">
-          Reply
-        </button>
+
+        <Button text="Reply"></Button>
       </div>
-    </div>
+    </Layout>
   );
 };
 
