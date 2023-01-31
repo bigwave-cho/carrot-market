@@ -49,10 +49,10 @@ export default function Layout({
         >
           <Link
             className={cls(
-              'flex flex-col items-center space-y-2',
+              'flex flex-col items-center space-y-2 transition-colors',
               router.pathname === '/'
-                ? 'text-orange-500'
-                : 'transition-colors hover:text-gray-500'
+                ? 'text-orange-500 hover:text-orange-400'
+                : ' hover:text-gray-500'
             )}
             href="/"
           >
@@ -74,9 +74,9 @@ export default function Layout({
           </Link>
           <Link
             className={cls(
-              'flex flex-col items-center space-y-2',
+              'flex flex-col items-center space-y-2 transition-colors',
               router.pathname === '/community'
-                ? 'text-orange-500'
+                ? 'text-orange-500 hover:text-orange-400'
                 : 'transition-colors hover:text-gray-500'
             )}
             href="/community"
@@ -95,13 +95,13 @@ export default function Layout({
                 d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
               ></path>
             </svg>
-            <span>동내생활</span>
+            <span>동네생활</span>
           </Link>
           <Link
             className={cls(
               'flex flex-col items-center space-y-2',
               router.pathname === '/chats'
-                ? 'text-orange-500'
+                ? 'text-orange-500 hover:text-orange-400'
                 : 'transition-colors hover:text-gray-500'
             )}
             href="/chats"
@@ -124,9 +124,9 @@ export default function Layout({
           </Link>
           <Link
             className={cls(
-              'flex flex-col items-center space-y-2',
+              'flex flex-col items-center space-y-2 transition-colors',
               router.pathname === '/live'
-                ? 'text-orange-500'
+                ? 'text-orange-500 hover:text-orange-400'
                 : 'transition-colors hover:text-gray-500'
             )}
             href="/live"
@@ -149,9 +149,9 @@ export default function Layout({
           </Link>
           <Link
             className={cls(
-              'flex flex-col items-center space-y-2',
+              'flex flex-col items-center space-y-2 transition-colors',
               router.pathname === '/profile'
-                ? 'text-orange-500'
+                ? 'text-orange-500 hover:text-orange-400'
                 : 'transition-colors hover:text-gray-500'
             )}
             href="/profile"
