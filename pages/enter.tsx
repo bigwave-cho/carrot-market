@@ -2,11 +2,28 @@ import Button from '@/components/button';
 import Input from '@/components/input';
 import { cls } from '@/libs/utils';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-export default function Enter() {
+interface EnterForm {
+  email?: string;
+  phone?: string;
+}
+
+const Enter = () => {
+  const { register, reset, handleSubmit } = useForm();
   const [method, setMethod] = useState<'email' | 'phone'>('email');
-  const onEmailClick = () => setMethod('email');
-  const onPhoneClick = () => setMethod('phone');
+  const onEmailClick = () => {
+    setMethod('email');
+    reset();
+  };
+  const onPhoneClick = () => {
+    setMethod('phone');
+    reset();
+  };
+
+  const onValid = (data: EnterForm) => {
+    console.log(data);
+  };
   return (
     <div className="mt-16 px-4">
       <h3 className="text-center text-3xl font-bold">Enter to Carrot</h3>
@@ -39,12 +56,23 @@ export default function Enter() {
             </button>
           </div>
         </div>
-        <form className="mt-8 flex flex-col space-y-4">
+        <form
+          onSubmit={handleSubmit(onValid)}
+          className="mt-8 flex flex-col space-y-4"
+        >
           {method === 'email' ? (
-            <Input name="email" label="Email address" type="email" required />
+            <Input
+              // register메서드 실행해서 prop으로 넘겨주기.
+              register={register('email')}
+              name="email"
+              label="Email address"
+              type="email"
+              required
+            />
           ) : null}
           {method === 'phone' ? (
             <Input
+              register={register('phone')}
               name="phone"
               label="Phone number"
               type="number"
@@ -94,4 +122,6 @@ export default function Enter() {
       </div>
     </div>
   );
-}
+};
+
+export default Enter;
