@@ -1,76 +1,86 @@
-import React, { useState } from 'react';
-
-// ## 귀찮은 폼 만들기의 예시!
-
-// - 왜 react hook form 라이브러리가 편할까?
-// form을 직접 생성한다면 신경써줘야 할 것들이 정말 많다.
-// 유저를 기본적으로 믿지 않고 설계해야하기 때문이다.
-// form이 제출중일 때 한번 더 누르거나
-// 영악하다면 브라우저에서 html 설정을 수정해버린다음 조건을 해제시켜 회원가입을 한다던지...
-// 이런 것들을 JS로 다 잡기에는 너무 힘들다.
-// 라이브러리 react hook form이 이럴 때 도움된다!
+import { FieldErrors, useForm } from 'react-hook-form';
 
 export default function Forms() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [formErrors, setFormErrors] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const {
+    setValue,
+    setError,
+    reset,
+    resetField,
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({ mode: 'onChange' });
+  // mode:onblur - 인풋에서 벗어날 때 오류 표시해줌.
+  // console.log(
+  //   register('이름', {
+  //     minLength: 2,
+  //     required: true,
+  //   })
+  // );
+  // name onBlur onChange 를 가진 객체.
+  // 첫번째 인자로는 이름, 두번째 인자는 validation에 관한 것을 객체로 전달
+  // console.log(watch());
+  // register로 생성한 것들의 name을 key로 가지고 값으로는 value.
+  //handleSubmit()은 1~2개의 함수를 전달 받음. 하나는 유효할 때, 하나는 유효X일 때
 
-  const onUsernameChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const {
-      currentTarget: { value },
-    } = event;
-    setUsername(value);
+  interface LoginForm {
+    username: string;
+    password: string;
+    email: string;
+    errors?: string;
+  }
+  const onVaild = (data: LoginForm) => {
+    console.log(data);
+    //fetch 했는데 백엔드가 먹통.
+    // -> setError("errors" {message: "백엔드가 먹통이오~"})
+
+    //이미 존재하는 유저네임
+    // setError("username" {message:" 이미 존재하는 이름."})
+    //{errors.username?.message}
+
+    reset(); // 폼 초기화
+    resetField('password'); //특정 필드만 초기화
+  };
+  const onInvalid = (errors: FieldErrors) => {
+    console.log(errors);
   };
 
-  const onEmailChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const {
-      currentTarget: { value },
-    } = event;
-    setEmail(value);
-  };
+  // 잡다한 기능 특정 state 벨류 바꾸기
+  // setValue('username', 'hello');
 
-  const onPasswordChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const {
-      currentTarget: { value },
-    } = event;
-    setPassword(value);
-  };
-
-  const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log(email, username, password);
-    if (username === '' || email === '' || password === '') {
-      setFormErrors('All fields are required!');
-    }
-    if (!email.includes('@')) {
-      setEmailError('not goood');
-    }
-  };
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit(onVaild, onInvalid)}>
       <input
-        value={username}
-        onChange={onUsernameChange}
+        {...register('username', {
+          required: '이름 써라',
+          minLength: {
+            message: '5글자 이상',
+            value: 5,
+          },
+        })}
         type="text"
         placeholder="Username"
-        required
-        minLength={5}
       />
       <input
-        value={email}
-        onChange={onEmailChange}
+        {...register('email', {
+          required: '메일 써라',
+          validate: {
+            notGmail: (value) => !value.includes('@gmail.com') || 'Gmail ㄴㄴ',
+          },
+        })}
         type="email"
         placeholder="Email"
-        required
+        //tailwind 커스텀
+        className={`${Boolean(errors.email?.message) ? 'border-red-500' : ''}`}
       />
+      {errors.email?.message}
       <input
-        value={password}
-        onChange={onPasswordChange}
+        {...register('password', {
+          required: true,
+        })}
         type="password"
         placeholder="Password"
-        required
       />
       <input type={'submit'} value="Create Account" />
     </form>
