@@ -12,8 +12,6 @@ interface EnterForm {
 }
 
 const Enter: NextPage = () => {
-  // enter : data를 백엔드에 Post -> 데이터를 mutation하는 함수
-  // 로딩, 데이터, 에러 상태 확인.
   const [enter, { loading, data, error }] = useMutation('/api/users/enter');
   const { register, reset, handleSubmit } = useForm<EnterForm>();
   const [method, setMethod] = useState<'email' | 'phone'>('email');

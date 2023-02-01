@@ -14,14 +14,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    // import 경로를 @로 간단하게 하기!
-    // baseUrl 은 tsconfing가 있는 지금 경로로
     "baseUrl": ".",
     "paths": {
-      // ../../ -> @/ 로 대체하기
       "@/*": ["./*"]
-      // 활용 예시 @가 baseUrl을 의미함.
-      // "@libs/*" :["libs/*"]  @libs
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
