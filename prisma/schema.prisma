@@ -11,11 +11,28 @@ datasource db {
 }
 
 model User{
- id       Int       @id @default(autoincrement())
- phone    Int?      @unique
- email    String?    @unique
- name     String 
- avatar   String?
- createAt DateTime  @default(now())
- updatedAt DateTime  @updatedAt
+ id         Int       @id @default(autoincrement())
+ phone      Int?      @unique
+ email      String?    @unique
+ name       String 
+ avatar     String?
+ createAt   DateTime  @default(now())
+ updatedAt  DateTime  @updatedAt
+ tokens     Token[]
 }
+
+model Token{
+  id        Int        @id @default(autoincrement())
+  payload   String     @unique
+  createAt  DateTime   @default(now())
+  updatedAt DateTime  @updatedAt
+  //아래 user는 실제로 db에 나타나진 않지만 token.user.phone처럼 data에 접근 가능하게 함.
+  user      User @relation(fields: [userId], references: [id])
+  //userId === User의 id
+  userId    Int
+  @@index([userId])
+  // 에러 떠서 공식문서로 해결
+  //https://www.prisma.io/docs/concepts/components/prisma-schema/relations/relation-mode#indexes
+}
+// 완료했으면 pscale connect [db명] -> npx prisma db push 로 db 업데이트
+// planet scale -> branch - > scheme에서 확인가능.
