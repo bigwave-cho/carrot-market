@@ -47,8 +47,6 @@ const Enter: NextPage = () => {
   };
 
   const onTokenValid = (validform: TokenForm) => {
-    // 새로운 mutation hook사용
-    //validform으로 token이 들어옴
     if (tokenLoading) return;
     confirmToken(validform);
   };
