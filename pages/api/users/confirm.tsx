@@ -1,38 +1,37 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import client from '@/libs/server/client';
 import withHandler, { ResponseType } from '@/libs/server/withHandler';
-import { withIronSessionApiRoute } from 'iron-session/next';
-
-//req.session.user 부분 ts에러 잡기.
-declare module 'iron-session' {
-  interface IronSessionData {
-    user?: {
-      id: number;
-    };
-  }
-}
+import { withApiSession } from '@/libs/server/withSession';
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) {
-  console.log(req.session);
+  //1. 토큰을 받아
   const { token } = req.body;
-  const exists = await client.token.findUnique({
+  const foundToken = await client.token.findUnique({
     where: {
       payload: token,
     },
   });
-  console.log(exists);
-  if (!exists) return res.status(404).end();
+  //2. 토큰이 없으면 404 반환
+  if (!foundToken) return res.status(404).end();
+  //3. 있으면 해당 토큰을 보유한 User의 id를 session.user에 할당
   req.session.user = {
-    id: exists.userId,
+    id: foundToken.userId,
   };
+  //4. 저장하고
   await req.session.save();
-  res.status(200).end();
+  //5. 해당 userId와 일치하는 토큰을 전부 삭제
+  // 왜? 로그인할 때 마다 토큰이 생성되고 user와 연결되는데
+  // 토큰은 업데이트 되는 것이 아니라 쌓인다. 그래서 로그인을 성공하고 나면 전부 지워서
+  // 비워주는 것이 장기적으로 굳!
+  await client.token.deleteMany({
+    where: {
+      userId: foundToken.userId,
+    },
+  });
+  res.json({ ok: true });
 }
 
-export default withIronSessionApiRoute(withHandler('POST', handler), {
-  cookieName: 'carrotsession',
-  password: '12345123451234512345123451234512345',
-});
+export default withApiSession(withHandler('POST', handler));

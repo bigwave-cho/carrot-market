@@ -12,8 +12,6 @@ datasource db {
 
 model User{
  id         Int       @id @default(autoincrement())
- // Int보다 더 큰 숫자 가능한 BigInt를 프리스마가 지원함.
- // users/me get할 때 BigInt 에러 때문에 phone 타입 String으로 수정함.
  phone      String?   @unique
  email      String?    @unique
  name       String 
