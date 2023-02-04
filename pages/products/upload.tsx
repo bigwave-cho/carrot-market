@@ -2,12 +2,45 @@ import Button from '@/components/button';
 import Input from '@/components/input';
 import Layout from '@/components/layout';
 import TextArea from '@/components/textarea';
+import useMutation from '@/libs/client/useMutation';
+import { Product } from '@prisma/client';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+
+interface UploadProductForm {
+  name: string;
+  price: number;
+  description: string;
+}
+
+interface UnloadProductMutaion {
+  ok: boolean;
+  // prisma가 알아서 product 타입을 만들어 줬음.
+  product: Product;
+}
 
 const Upload: NextPage = () => {
+  const { register, handleSubmit } = useForm<UploadProductForm>();
+  const [uploadProduct, { loading, data }] =
+    useMutation<UnloadProductMutaion>('/api/products');
+  const router = useRouter();
+
+  const onValid = (data: UploadProductForm) => {
+    if (loading) return;
+    uploadProduct(data);
+  };
+
+  useEffect(() => {
+    if (data?.ok) {
+      router.push(`/products/${data.product.id}`);
+    }
+  }, [data, router]);
+
   return (
     <Layout canGoBack title="Upload Product">
-      <div className="space-y-5 px-4 py-10">
+      <form onSubmit={handleSubmit(onValid)} className="space-y-5 px-4 py-10">
         <div>
           <label className="flex h-48 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-300 text-gray-600 hover:border-orange-500 hover:text-orange-500">
             <svg
@@ -27,11 +60,29 @@ const Upload: NextPage = () => {
             <input className="hidden" type="file" />
           </label>
         </div>
-        <Input label="Name" name="name" required type="text"></Input>
-        <Input label="Price" name="price" required type="text" kind="price" />
-        <TextArea label="Description" name="description" />
-        <Button text="Upload item" />
-      </div>
+        <Input
+          register={register('name', { required: true })}
+          label="Name"
+          name="name"
+          type="text"
+          required
+        ></Input>
+        <Input
+          register={register('price', { required: true })}
+          label="Price"
+          name="price"
+          type="text"
+          kind="price"
+          required
+        />
+        <TextArea
+          register={register('description', { required: true })}
+          label="Description"
+          name="description"
+          required
+        />
+        <Button text={loading ? 'Loading...' : 'Upload item'} />
+      </form>
     </Layout>
   );
 };
