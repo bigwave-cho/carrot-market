@@ -11,9 +11,26 @@ interface EnterForm {
   phone?: string;
 }
 
+interface TokenForm {
+  token: string;
+}
+
+interface mutationMutationResult {
+  ok: boolean;
+}
+
 const Enter: NextPage = () => {
-  const [enter, { loading, data, error }] = useMutation('/api/users/enter');
+  const [enter, { loading, data, error }] =
+    useMutation<mutationMutationResult>('/api/users/enter');
   const { register, reset, handleSubmit } = useForm<EnterForm>();
+
+  const [
+    confirmToken,
+    { loading: tokenLoading, data: tokenData, error: tokenError },
+  ] = useMutation<mutationMutationResult>('/api/users/confirm');
+  const { register: tokenResgister, handleSubmit: tokenHandleSubmit } =
+    useForm<TokenForm>();
+
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const onEmailClick = () => {
     setMethod('email');
@@ -28,69 +45,98 @@ const Enter: NextPage = () => {
     if (loading) return;
     enter(validform);
   };
-  // console.log(loading, data, error);
+
+  const onTokenValid = (validform: TokenForm) => {
+    // 새로운 mutation hook사용
+    //validform으로 token이 들어옴
+    if (tokenLoading) return;
+    confirmToken(validform);
+  };
+
   return (
     <div className="mt-16 px-4">
       <h3 className="text-center text-3xl font-bold">Enter to Carrot</h3>
       <div className="mt-8">
-        <div className="flex flex-col items-center">
-          <h5 className="text-sm text-gray-500">Enter using:</h5>
-          <div className="mt-8 grid w-full grid-cols-2 gap-16">
-            <button
-              className={
-                // 주먹구구식
-                method === 'email'
-                  ? `border-b-2  border-orange-500 pb-4 font-medium text-orange-500`
-                  : `border-b-2 border-transparent pb-4 font-medium text-gray-500`
-              }
-              onClick={onEmailClick}
+        {data?.ok ? (
+          <>
+            <form
+              onSubmit={tokenHandleSubmit(onTokenValid)}
+              className="mt-8 flex flex-col space-y-4"
             >
-              Email address
-            </button>
-            <button
-              // 함수를 만들어서 깔끔(tailwind에서 많이 쓰임.)
-              className={cls(
-                'border-b-2 pb-4 font-medium ',
-                method === 'phone'
-                  ? ` border-orange-500 pb-4 font-medium text-orange-500`
-                  : 'border-transparent text-gray-500'
-              )}
-              onClick={onPhoneClick}
+              <Input
+                register={tokenResgister('token')}
+                name="token"
+                label="Comfirmation Token"
+                type="number"
+                required
+              />
+              <Button text={tokenLoading ? 'Loading...' : 'Confirm Token'} />
+            </form>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col items-center">
+              <h5 className="text-sm text-gray-500">Enter using:</h5>
+              <div className="mt-8 grid w-full grid-cols-2 gap-16">
+                <button
+                  className={
+                    // 주먹구구식
+                    method === 'email'
+                      ? `border-b-2  border-orange-500 pb-4 font-medium text-orange-500`
+                      : `border-b-2 border-transparent pb-4 font-medium text-gray-500`
+                  }
+                  onClick={onEmailClick}
+                >
+                  Email address
+                </button>
+                <button
+                  // 함수를 만들어서 깔끔(tailwind에서 많이 쓰임.)
+                  className={cls(
+                    'border-b-2 pb-4 font-medium ',
+                    method === 'phone'
+                      ? ` border-orange-500 pb-4 font-medium text-orange-500`
+                      : 'border-transparent text-gray-500'
+                  )}
+                  onClick={onPhoneClick}
+                >
+                  Phone number
+                </button>
+              </div>
+            </div>
+            <form
+              onSubmit={handleSubmit(onValid)}
+              className="mt-8 flex flex-col space-y-4"
             >
-              Phone number
-            </button>
-          </div>
-        </div>
-        <form
-          onSubmit={handleSubmit(onValid)}
-          className="mt-8 flex flex-col space-y-4"
-        >
-          {method === 'email' ? (
-            <Input
-              register={register('email')}
-              name="email"
-              label="Email address"
-              type="email"
-              required
-            />
-          ) : null}
-          {method === 'phone' ? (
-            <Input
-              register={register('phone')}
-              name="phone"
-              label="Phone number"
-              type="number"
-              kind="phone"
-              required
-            />
-          ) : null}
-          {method === 'email' ? (
-            <Button text={loading ? 'Loading...' : 'Get login link'} />
-          ) : null}
-          {method === 'phone' ? (
-            <Button text={loading ? 'Loading...' : 'Get one-time password'} />
-          ) : null}
-        </form>
+              {method === 'email' ? (
+                <Input
+                  register={register('email')}
+                  name="email"
+                  label="Email address"
+                  type="email"
+                  required
+                />
+              ) : null}
+              {method === 'phone' ? (
+                <Input
+                  register={register('phone')}
+                  name="phone"
+                  label="Phone number"
+                  type="number"
+                  kind="phone"
+                  required
+                />
+              ) : null}
+              {method === 'email' ? (
+                <Button text={loading ? 'Loading...' : 'Get login link'} />
+              ) : null}
+              {method === 'phone' ? (
+                <Button
+                  text={loading ? 'Loading...' : 'Get one-time password'}
+                />
+              ) : null}
+            </form>
+          </>
+        )}
         <div className="mt-8">
           <div className="relative">
             <div className="absolute w-full border-t border-gray-300" />

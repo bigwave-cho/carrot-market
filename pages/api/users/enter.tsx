@@ -3,13 +3,6 @@ import client from '@/libs/server/client';
 import withHandler, { ResponseType } from '@/libs/server/withHandler';
 import twilio from 'twilio';
 import mail from '@sendgrid/mail';
-import { SyncGrant } from 'twilio/lib/jwt/AccessToken';
-
-/*
-Sendgrid 를 이용한 이메일 인증 기능 구현
-가입 -> Account 생성 -> integration, Web API 클릭
-APIKEY 생성해서 .env에 추가한 후 npm install --save @sendgrid/mail
-*/
 
 const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
 
@@ -39,23 +32,23 @@ async function handler(
       },
     },
   });
+  // free 계정 잠시 사용 중지
   if (phone) {
-    const message = await twilioClient.messages.create({
-      messagingServiceSid: process.env.TWILIO_MSID,
-      to: process.env.TWILIO_PHONE_NUMBER!,
-
-      body: `Your login token is ${payload}`,
-    });
-    console.log(message);
+    // const message = await twilioClient.messages.create({
+    //   messagingServiceSid: process.env.TWILIO_MSID,
+    //   to: process.env.TWILIO_PHONE_NUMBER!,
+    //   body: `Your login token is ${payload}`,
+    // });
+    // console.log(message);
   } else if (email) {
-    const email = await mail.send({
-      from: process.env.MY_EMAIL_ADDRESS,
-      to: process.env.MY_EMAIL_ADDRESS,
-      subject: 'Verify mail',
-      text: `Your token is ${payload}`,
-      html: `<strong>Your token is ${payload}</strong>`,
-    });
-    console.log(email);
+    // const email = await mail.send({
+    //   from: process.env.MY_EMAIL_ADDRESS!,
+    //   to: process.env.MY_EMAIL_ADDRESS,
+    //   subject: 'Verify mail',
+    //   text: `Your token is ${payload}`,
+    //   html: `<strong>Your token is ${payload}</strong>`,
+    // });
+    // console.log(email);
   }
 
   return res.json({

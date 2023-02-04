@@ -12,7 +12,8 @@ datasource db {
 
 model User{
  id         Int       @id @default(autoincrement())
- phone      Int?      @unique
+ // Int보다 더 큰 숫자 가능한 BigInt를 프리스마가 지원함.
+ phone      BigInt?   @unique
  email      String?    @unique
  name       String 
  avatar     String?
@@ -26,7 +27,8 @@ model Token{
   payload   String     @unique
   createAt  DateTime   @default(now())
   updatedAt DateTime  @updatedAt
-  user      User @relation(fields: [userId], references: [id])
+  // fields의 userId와 User의 id를 연결, onDelete시 Cascade(User삭제시 연결된 토큰 삭제)
+  user      User @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId    Int
   @@index([userId])
 }
