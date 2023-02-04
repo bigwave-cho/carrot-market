@@ -56,4 +56,9 @@ async function handler(
   });
 }
 
-export default withHandler('POST', handler);
+export default withHandler({
+  method: 'POST',
+  handler,
+  // login 페이지에서는 isPrivate이 false이기 때문에 기본적으로 false지정.
+  isPrivate: false,
+});
