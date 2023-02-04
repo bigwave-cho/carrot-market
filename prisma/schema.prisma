@@ -13,7 +13,8 @@ datasource db {
 model User{
  id         Int       @id @default(autoincrement())
  // Int보다 더 큰 숫자 가능한 BigInt를 프리스마가 지원함.
- phone      BigInt?   @unique
+ // users/me get할 때 BigInt 에러 때문에 phone 타입 String으로 수정함.
+ phone      String?   @unique
  email      String?    @unique
  name       String 
  avatar     String?
@@ -27,8 +28,7 @@ model Token{
   payload   String     @unique
   createAt  DateTime   @default(now())
   updatedAt DateTime  @updatedAt
-  // fields의 userId와 User의 id를 연결, onDelete시 Cascade(User삭제시 연결된 토큰 삭제)
-  // db에서 토큰을 통해 가져올 때 include:{user:true}로 접근 가능.
+
   user      User @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId    Int
   @@index([userId])
