@@ -7,9 +7,9 @@ import { Answer, Post, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
-import Preview from 'twilio/lib/rest/Preview';
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -29,14 +29,26 @@ interface CommunityPostResponse {
   post: PostWithUser;
   isWondering: boolean;
 }
+interface AnswerForm {
+  answer: string;
+}
+interface AnswerResponse {
+  ok: boolean;
+  answer: Answer;
+}
 
 const CommunityPostDetail: NextPage = () => {
-  const { register } = useForm();
+  const { register, handleSubmit, reset } = useForm<AnswerForm>();
   const router = useRouter();
   const { data, mutate } = useSWR<CommunityPostResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
   );
-  const [wonder] = useMutation(`/api/posts/${router.query.id}/wonder`);
+  const [wonder, { loading }] = useMutation<AnswerResponse>(
+    `/api/posts/${router.query.id}/wonder`
+  );
+  const [sendAnswer, { data: answerData, loading: answerLoading }] =
+    useMutation(`/api/posts/${router.query.id}/answers`);
+
   const onWonderClick = () => {
     if (!data) return;
     mutate(
@@ -55,12 +67,21 @@ const CommunityPostDetail: NextPage = () => {
       },
       false
     );
-    wonder({});
+    if (!loading) {
+      wonder({});
+    }
   };
-  console.log(data);
-  // 참고 : data.post에 다 옵셔널 붙인 이유는
-  // post가 없을 경우 에러 뜨는 것 방지.
-  // 이렇게 안하려면 404일 경우 page를 만들어주면 된다.
+
+  const onValid = (form: AnswerForm) => {
+    if (answerLoading) return;
+    sendAnswer(form);
+  };
+
+  useEffect(() => {
+    if (answerData && answerData.ok) {
+      reset();
+    }
+  }, [answerData, reset]);
   return (
     <Layout canGoBack>
       <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
@@ -138,7 +159,7 @@ const CommunityPostDetail: NextPage = () => {
                   {answer.user.name}
                 </span>
                 <span className="block text-xs text-gray-500 ">
-                  {answer.createdAt.toString()}
+                  {answer.createdAt?.toString()}
                 </span>
                 <p className="mt-2 text-gray-700">{answer.answer}</p>
               </div>
@@ -157,7 +178,7 @@ const CommunityPostDetail: NextPage = () => {
         </div> */}
       </div>
 
-      <div className="px-4">
+      <form onSubmit={handleSubmit(onValid)} className="px-4">
         <TextArea
           register={register('answer', { required: true, minLength: 5 })}
           name="description"
@@ -165,8 +186,8 @@ const CommunityPostDetail: NextPage = () => {
           placeholder="질문에 답을 달아주세요!"
         />
 
-        <Button text="Reply"></Button>
-      </div>
+        <Button text={answerLoading ? 'Loading...' : 'Reply'}></Button>
+      </form>
     </Layout>
   );
 };
