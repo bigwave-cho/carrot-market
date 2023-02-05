@@ -1,12 +1,15 @@
 import Button from '@/components/button';
 import Layout from '@/components/layout';
 import TextArea from '@/components/textarea';
+import useMutation from '@/libs/client/useMutation';
+import { cls } from '@/libs/client/utils';
 import { Answer, Post, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
+import Preview from 'twilio/lib/rest/Preview';
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -24,17 +27,40 @@ interface PostWithUser extends Post {
 interface CommunityPostResponse {
   ok: boolean;
   post: PostWithUser;
+  isWondering: boolean;
 }
 
 const CommunityPostDetail: NextPage = () => {
   const { register } = useForm();
   const router = useRouter();
-  const { data, error } = useSWR<CommunityPostResponse>(
+  const { data, mutate } = useSWR<CommunityPostResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
   );
-
+  const [wonder] = useMutation(`/api/posts/${router.query.id}/wonder`);
+  const onWonderClick = () => {
+    if (!data) return;
+    mutate(
+      {
+        ...data,
+        post: {
+          ...data?.post,
+          _count: {
+            ...data?.post._count,
+            wonderings: data.isWondering
+              ? data?.post._count.wonderings - 1
+              : data?.post._count.wonderings + 1,
+          },
+        },
+        isWondering: !data.isWondering,
+      },
+      false
+    );
+    wonder({});
+  };
   console.log(data);
-
+  // 참고 : data.post에 다 옵셔널 붙인 이유는
+  // post가 없을 경우 에러 뜨는 것 방지.
+  // 이렇게 안하려면 404일 경우 page를 만들어주면 된다.
   return (
     <Layout canGoBack>
       <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
@@ -42,10 +68,10 @@ const CommunityPostDetail: NextPage = () => {
       </span>
       <div className="mb-3 flex cursor-pointer items-center space-x-3  border-b px-4 pb-3">
         <div className="h-10 w-10 rounded-full bg-slate-300" />
-        <Link href={`/user/profile/${data?.post.userId}`}>
+        <Link href={`/user/profile/${data?.post?.userId}`}>
           <div>
             <p className="text-sm font-medium text-gray-700">
-              {data?.post.user.name}
+              {data?.post?.user.name}
             </p>
             <p className="text-xs font-medium text-gray-500">
               View profile &rarr;
@@ -56,10 +82,16 @@ const CommunityPostDetail: NextPage = () => {
       <div>
         <div className="mt-2 px-4 text-gray-700">
           <span className="font-medium text-orange-500">Q.</span>
-          {data?.post.question}
+          {data?.post?.question}
         </div>
         <div className="mt-3 flex w-full space-x-5 border-t border-b-[2px] px-4 py-2.5  text-gray-700">
-          <span className="flex items-center space-x-2 text-sm">
+          <button
+            onClick={onWonderClick}
+            className={cls(
+              'flex items-center space-x-2 text-sm',
+              data?.isWondering ? 'text-teal-600' : ''
+            )}
+          >
             <svg
               className="h-4 w-4"
               fill="none"
@@ -74,8 +106,8 @@ const CommunityPostDetail: NextPage = () => {
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               ></path>
             </svg>
-            <span>궁금해요 {`${data?.post._count.wonderings}`}</span>
-          </span>
+            <span>궁금해요 {`${data?.post?._count.wonderings}`}</span>
+          </button>
           <span className="flex items-center space-x-2 text-sm">
             <svg
               className="h-4 w-4"
@@ -91,13 +123,13 @@ const CommunityPostDetail: NextPage = () => {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               ></path>
             </svg>
-            <span>답변 {`${data?.post._count.answers}`}</span>
+            <span>답변 {`${data?.post?._count.answers}`}</span>
           </span>
         </div>
       </div>
 
       <div className="my-5 space-y-5 px-4">
-        {data?.post.answers.map((answer) => {
+        {data?.post?.answers.map((answer) => {
           return (
             <div key={answer.id} className="flex items-start space-x-3">
               <div className="h-8 w-8 rounded-full bg-slate-200" />
