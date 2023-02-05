@@ -1,12 +1,13 @@
 import Button from '@/components/button';
 import Layout from '@/components/layout';
 import useMutation from '@/libs/client/useMutation';
+import useUser from '@/libs/client/useUser';
 import { cls } from '@/libs/client/utils';
 import { Product, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 
 interface ProductWithUser extends Product {
   user: User;
@@ -18,34 +19,32 @@ interface ItemDetailResponse {
   relatedProducts: Product[];
   isLiked: boolean;
 }
-
-/*
-현재 토글 기능은 SWR로 캐시된 데이터를 이용하고 있기 때문에
-optimistic UI update를 하기 위해서는 리팩터링이 필요하다.
-*/
-
+// unbound mutaion 적용해보기.
 const ItemDetail: NextPage = () => {
+  const { user, isLoading } = useUser();
+  //unbound mutation 가져오기
+  //제한되지 않았기 때문에 변경하려는 데이터를 정확히 명시해야 한다.
+  const { mutate } = useSWRConfig();
+  console.log(user);
   const router = useRouter();
-  const { data, mutate } = useSWR<ItemDetailResponse>(
+  const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
-  //bound(제한된) mutation 함수
-  //mutation함수가 여기 있는 data(useSWR의)만을 수정할 수 있음.
 
-  //unbound mutation은 직접 요청한 데이터의 수정 뿐만 아니라
-  // 다른 화면의 다른 요청 데이터들도 변경 가능.
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
-    //mutate의 첫 인자는 무엇을 넣든 기존 데이터를 덮어쓰게 됨.(update가 아닌 아예 대체)
-    //두 번째 인자는 SWR이 다시 revalidation을 하도록 함.
-    //즉, 아래 mutate는 캐시된 데이터를 수정해서 UI를 optimistic하게 업데이트하고
-    // true는 SWR이 다시 api로 요청을 보내서 데이터를 불러오게 함.
-    // 클릭하면 순간 좋아요 버튼이 변했다가 돌아오는데 이는 SWR이 API에 요청을 해서
-    // validate 한 것 때문. false로 두면 변한대로 남아있음.
     if (!data) return;
-    mutate({ ...data, isLiked: !data.isLiked }, false);
+    // setState(sldfk) : 덮어쓰기
+    // setstate(prev=>({...prev, daf})) : 이전 데이터 이용해서 덮기랑 비슷함.
+    boundMutate((prev) => prev && { ...prev, isLiked: !data.isLiked }, false);
+    //mutate(key,data,revalidate) : key - 다룰 데이터
+    //useUser함수에서 캐싱된 데이터를 변경 가능.
+    mutate('/api/users/me', (prev: any) => ({ ok: !prev.ok }), false);
 
-    toggleFav({});
+    //만약 데이터 수정이 아니라 해당 데이터를 리패치하고 싶으면
+    // mutate('/api/users/me') <- 이렇게 호출해주면 됨.
+
+    // toggleFav({});
   };
 
   return (
