@@ -1,17 +1,27 @@
 import Button from '@/components/button';
 import Layout from '@/components/layout';
+import { Product, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import products from '../api/products';
 
-// https://www.section.io/engineering-education/skeleton-loading-in-nextjs-with-tailwindcss/
-// tailwind skeleton Loading 구현하는 방법.
+interface ProductWithUser extends Product {
+  user: User;
+}
+// data에 타입 적용하기.
+// 그냥 아래의 인터페이스를 적용하면 Product에는
+// user에 대한 타입이 없기 때문에 위처럼 Product인터페이스에 user타입을 extends!
+
+interface ItemDetailResponse {
+  ok: boolean;
+  product: ProductWithUser;
+  relatedProducts: Product[];
+}
 
 const ItemDetail: NextPage = () => {
   const router = useRouter();
-  const { data } = useSWR(
+  const { data } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
   console.log(data);
@@ -83,11 +93,15 @@ const ItemDetail: NextPage = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Similar items</h2>
           <div className=" mt-6 grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((_, i) => (
-              <div key={i}>
-                <div className="mb-4 h-56 w-full bg-slate-300" />
-                <h3 className="-mb-1 text-gray-700">Galaxy S60</h3>
-                <span className="text-sm font-medium text-gray-900">$6</span>
+            {data?.relatedProducts.map((product) => (
+              <div key={product.id}>
+                <Link href={`/products/${product.id}`}>
+                  <div className="mb-4 h-56 w-full bg-slate-300" />
+                  <h3 className="-mb-1 text-gray-700">{product.name}</h3>
+                  <span className="text-sm font-medium text-gray-900">
+                    ₩{product.price}
+                  </span>
+                </Link>
               </div>
             ))}
           </div>

@@ -11,6 +11,7 @@ async function handler(
   // query의 타입 string|string[]|undefined
   // 쿼리가 여러개 붙을 수 있고 없을 수도 있음.
   const { id } = req.query;
+
   const product = await client.product.findUnique({
     where: {
       id: Number(id),
@@ -26,8 +27,25 @@ async function handler(
       },
     },
   });
+  const terms = product?.name.split(' ').map((word) => ({
+    //filter 조건
+    name: {
+      contains: word,
+    },
+  }));
 
-  res.json({ ok: true, product });
+  const relatedProducts = await client.product.findMany({
+    where: {
+      OR: terms,
+      AND: {
+        id: {
+          not: product?.id,
+        },
+      },
+    },
+  });
+
+  res.json({ ok: true, product, relatedProducts });
 }
 
 export default withApiSession(
