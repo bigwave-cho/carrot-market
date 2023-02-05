@@ -14,8 +14,7 @@ interface ProudctResponse {
 
 const Home: NextPage = () => {
   const { user, isLoading } = useUser();
-  // /api/products 는 현재 POST만 받고 있음
-  // GET과 POST를 둘 다 처리하도록 withHandler를 리팩터
+
   const { data } = useSWR<ProudctResponse>('/api/products');
   return (
     <Layout title="Home" hasTabBar>

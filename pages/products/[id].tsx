@@ -1,8 +1,20 @@
 import Button from '@/components/button';
 import Layout from '@/components/layout';
 import type { NextPage } from 'next';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import products from '../api/products';
+
+// https://www.section.io/engineering-education/skeleton-loading-in-nextjs-with-tailwindcss/
+// tailwind skeleton Loading 구현하는 방법.
 
 const ItemDetail: NextPage = () => {
+  const router = useRouter();
+  const { data } = useSWR(
+    router.query.id ? `/api/products/${router.query.id}` : null
+  );
+  console.log(data);
   return (
     <Layout canGoBack>
       <div className="px-4 py-4">
@@ -11,25 +23,41 @@ const ItemDetail: NextPage = () => {
           <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
             <div className="h-12 w-12 rounded-full bg-slate-300" />
             <div>
-              <p className="text-sm font-medium text-gray-700">Steve Jebs</p>
-              <p className="text-xs font-medium text-gray-500">
-                View profile &rarr;
+              <p className="text-sm font-medium text-gray-700">
+                {data?.product.user.name}
               </p>
+              <Link
+                href={`/users/profiles/${data?.product.id}`}
+                className="text-xs font-medium text-gray-500"
+              >
+                View profile &rarr;
+              </Link>
             </div>
           </div>
           <div className="mt-5">
-            <h1 className="text-3xl font-bold text-gray-900">Galaxy S50</h1>
-            <span className="mt-3 block text-2xl text-gray-900">$140</span>
-            <p className=" my-6 text-gray-700">
-              My money&apos;s in that office, right? If she start giving me some
-              bullshit about it ain&apos;t there, and we got to go someplace
-              else and get it, I&apos;m gonna shoot you in the head then and
-              there. Then I&apos;m gonna shoot that bitch in the kneecaps, find
-              out where my goddamn money is. She gonna tell me too. Hey, look at
-              me when I&apos;m talking to you, motherfucker. You listen: we go
-              in there, and that ni**a Winston or anybody else is in there, you
-              the first motherfucker to get shot. You understand?
-            </p>
+            {data ? (
+              <>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {data?.product.name}
+                </h1>
+                <span className="mt-3 block text-2xl text-gray-900">
+                  ₩{data?.product.price}
+                </span>
+                <p className=" my-6 text-gray-700">
+                  {data?.product.description}
+                </p>
+              </>
+            ) : (
+              <div className="flex w-full flex-1 flex-col items-center px-20 pb-20">
+                <div className="mt-12 w-1/2 animate-pulse flex-row items-center justify-center space-x-1 rounded-xl border p-6 ">
+                  <div className="flex flex-col space-y-2">
+                    <div className="h-6 w-11/12 rounded-md bg-gray-200 text-center font-bold text-orange-500 ">
+                      Loading...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between space-x-2">
               <Button large text="Talk to seller"></Button>
               <button className="flex items-center justify-center rounded-md p-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500">
