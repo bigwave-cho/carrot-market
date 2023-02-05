@@ -19,13 +19,32 @@ interface ItemDetailResponse {
   isLiked: boolean;
 }
 
+/*
+현재 토글 기능은 SWR로 캐시된 데이터를 이용하고 있기 때문에
+optimistic UI update를 하기 위해서는 리팩터링이 필요하다.
+*/
+
 const ItemDetail: NextPage = () => {
   const router = useRouter();
-  const { data } = useSWR<ItemDetailResponse>(
+  const { data, mutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
+  //bound(제한된) mutation 함수
+  //mutation함수가 여기 있는 data(useSWR의)만을 수정할 수 있음.
+
+  //unbound mutation은 직접 요청한 데이터의 수정 뿐만 아니라
+  // 다른 화면의 다른 요청 데이터들도 변경 가능.
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
+    //mutate의 첫 인자는 무엇을 넣든 기존 데이터를 덮어쓰게 됨.(update가 아닌 아예 대체)
+    //두 번째 인자는 SWR이 다시 revalidation을 하도록 함.
+    //즉, 아래 mutate는 캐시된 데이터를 수정해서 UI를 optimistic하게 업데이트하고
+    // true는 SWR이 다시 api로 요청을 보내서 데이터를 불러오게 함.
+    // 클릭하면 순간 좋아요 버튼이 변했다가 돌아오는데 이는 SWR이 API에 요청을 해서
+    // validate 한 것 때문. false로 두면 변한대로 남아있음.
+    if (!data) return;
+    mutate({ ...data, isLiked: !data.isLiked }, false);
+
     toggleFav({});
   };
 
@@ -38,10 +57,10 @@ const ItemDetail: NextPage = () => {
             <div className="h-12 w-12 rounded-full bg-slate-300" />
             <div>
               <p className="text-sm font-medium text-gray-700">
-                {data?.product.user.name}
+                {data?.product?.user.name}
               </p>
               <Link
-                href={`/users/profiles/${data?.product.id}`}
+                href={`/users/profiles/${data?.product?.id}`}
                 className="text-xs font-medium text-gray-500"
               >
                 View profile &rarr;
@@ -52,13 +71,13 @@ const ItemDetail: NextPage = () => {
             {data ? (
               <>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {data?.product.name}
+                  {data?.product?.name}
                 </h1>
                 <span className="mt-3 block text-2xl text-gray-900">
-                  ₩{data?.product.price}
+                  ₩{data?.product?.price}
                 </span>
                 <p className=" my-6 text-gray-700">
-                  {data?.product.description}
+                  {data?.product?.description}
                 </p>
               </>
             ) : (
@@ -75,7 +94,6 @@ const ItemDetail: NextPage = () => {
             <div className="flex items-center justify-between space-x-2">
               <Button large text="Talk to seller"></Button>
               <button
-                //optimistic ui update : 통신이 잘된다고 가정하고 요청의 응답을 기다리지 않고 UI를 업데이트
                 onClick={onFavClick}
                 className={cls(
                   'flex items-center justify-center rounded-md p-3',

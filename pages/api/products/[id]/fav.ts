@@ -11,7 +11,6 @@ async function handler(
     query: { id },
     session: { user },
   } = req;
-  // findUique는 unique한 id 같은 field만 쿼리가능함.
   const alreadyExists = await client.fav.findFirst({
     where: {
       productId: +id!.toString(),
@@ -19,15 +18,12 @@ async function handler(
     },
   });
   if (alreadyExists) {
-    //delete 하트 클릭 시 fav가 존재하면 삭제
-    // delete 또한 unique 필드에만 적용됨.
     await client.fav.delete({
       where: {
         id: alreadyExists.id,
       },
     });
   } else {
-    // create  없으면 생성
     await client.fav.create({
       data: {
         user: {

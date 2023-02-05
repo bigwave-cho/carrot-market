@@ -42,15 +42,13 @@ async function handler(
       },
     },
   });
-  //findFirst 조건과 일치하는 첫 요소를 리턴.
-  //없으면 null 있으면 해당 fav 객체.
+
   const isLiked = Boolean(
     await client.fav.findFirst({
       where: {
         productId: product?.id,
         userId: user?.id,
       },
-      //모든 필드를 가져오지 않고 id만 가져오도록 설정.
       select: {
         id: true,
       },
