@@ -80,8 +80,10 @@ const CommunityPostDetail: NextPage = () => {
   useEffect(() => {
     if (answerData && answerData.ok) {
       reset();
+      // mutate를 그냥 호출하면 api에 데이터를 요청해서 가져옴.
+      mutate();
     }
-  }, [answerData, reset]);
+  }, [answerData, reset, mutate]);
   return (
     <Layout canGoBack>
       <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
@@ -166,16 +168,6 @@ const CommunityPostDetail: NextPage = () => {
             </div>
           );
         })}
-        {/* <div className="flex items-start space-x-3">
-          <div className="h-8 w-8 rounded-full bg-slate-200" />
-          <div>
-            <span className="block text-sm font-medium text-gray-700">
-              Steve Jebs
-            </span>
-            <span className="block text-xs text-gray-500 ">2시간 전</span>
-            <p className="mt-2 text-gray-700">비비고 드십쇼.</p>
-          </div>
-        </div> */}
       </div>
 
       <form onSubmit={handleSubmit(onValid)} className="px-4">
@@ -185,7 +177,6 @@ const CommunityPostDetail: NextPage = () => {
           required
           placeholder="질문에 답을 달아주세요!"
         />
-
         <Button text={answerLoading ? 'Loading...' : 'Reply'}></Button>
       </form>
     </Layout>
