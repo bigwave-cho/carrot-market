@@ -8,7 +8,16 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   if (req.method === 'GET') {
-    const products = await client.product.findMany({});
+    const products = await client.product.findMany({
+      //products 모델에서 자신을 가리키고 있는 fav를 카운트 할 수 있음.
+      include: {
+        _count: {
+          select: {
+            favs: true,
+          },
+        },
+      },
+    });
     return res.json({ ok: true, products });
   }
   if (req.method === 'POST') {

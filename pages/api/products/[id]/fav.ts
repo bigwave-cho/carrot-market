@@ -39,6 +39,8 @@ async function handler(
       },
     });
   }
+
+  res.status(200);
 }
 
 export default withApiSession(

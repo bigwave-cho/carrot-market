@@ -19,11 +19,9 @@ interface ItemDetailResponse {
   relatedProducts: Product[];
   isLiked: boolean;
 }
-// unbound mutaion 적용해보기.
 const ItemDetail: NextPage = () => {
   const { user, isLoading } = useUser();
-  //unbound mutation 가져오기
-  //제한되지 않았기 때문에 변경하려는 데이터를 정확히 명시해야 한다.
+
   const { mutate } = useSWRConfig();
   console.log(user);
   const router = useRouter();
@@ -34,17 +32,10 @@ const ItemDetail: NextPage = () => {
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
     if (!data) return;
-    // setState(sldfk) : 덮어쓰기
-    // setstate(prev=>({...prev, daf})) : 이전 데이터 이용해서 덮기랑 비슷함.
+
     boundMutate((prev) => prev && { ...prev, isLiked: !data.isLiked }, false);
-    //mutate(key,data,revalidate) : key - 다룰 데이터
-    //useUser함수에서 캐싱된 데이터를 변경 가능.
-    mutate('/api/users/me', (prev: any) => ({ ok: !prev.ok }), false);
 
-    //만약 데이터 수정이 아니라 해당 데이터를 리패치하고 싶으면
-    // mutate('/api/users/me') <- 이렇게 호출해주면 됨.
-
-    // toggleFav({});
+    toggleFav({});
   };
 
   return (
