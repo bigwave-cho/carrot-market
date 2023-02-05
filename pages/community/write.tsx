@@ -14,7 +14,6 @@ interface WriteFrom {
 
 interface WriteResponse {
   ok: boolean;
-  // Prisma제공 모델 타입 임포트!
   post: Post;
 }
 
@@ -23,13 +22,11 @@ const Write: NextPage = () => {
   const { register, handleSubmit } = useForm<WriteFrom>();
   const [post, { loading, data }] = useMutation<WriteResponse>('/api/posts');
   const onValid = (data: WriteFrom) => {
-    // submit버튼 중복 클릭 방지.
     if (loading) return;
     post(data);
   };
 
   useEffect(() => {
-    // submit하면 등록된 post의 id 받기.
     if (data && data.ok) {
       router.push(`/community/${data?.post.id}`);
     }
