@@ -7,6 +7,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import useCoords from '@/libs/client/useCoords';
 
 interface WriteFrom {
   question: string;
@@ -18,12 +19,15 @@ interface WriteResponse {
 }
 
 const Write: NextPage = () => {
+  // hook만들 때는 반환값이 무엇일지 생각하고 만드는 것을 지향
+  const { latitude, longitude } = useCoords();
   const router = useRouter();
   const { register, handleSubmit } = useForm<WriteFrom>();
   const [post, { loading, data }] = useMutation<WriteResponse>('/api/posts');
   const onValid = (data: WriteFrom) => {
     if (loading) return;
-    post(data);
+    // data에 위경도 추가!
+    post({ ...data, latitude, longitude });
   };
 
   useEffect(() => {

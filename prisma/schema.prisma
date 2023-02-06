@@ -74,6 +74,9 @@ model Post{
   userId    Int
   @@index([userId])
   question  String @db.MediumText
+  // 위치 비허용 대비 옵셔널 필드로 생성
+  latitude  Float?
+  longitude Float?
   answers  Answer[]
   wonderings Wondering[]
 }
