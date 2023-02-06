@@ -16,11 +16,10 @@ export default function useCoords() {
   }: GeolocationPosition) => {
     setCoords({ latitude, longitude });
   };
-
+  // 현재 useEffect가 실행되기 전 백엔드에서는 위경도가 null인채로 요청을 보내고 있음.
+  // community/index 수정하자
   useEffect(() => {
-    //위치 찾기 성공하면 실행할 함수 onSuccess
     navigator.geolocation.getCurrentPosition(onSuccess);
   }, []);
-  // 완성했으면 prisma scheme에 공간 창출
   return coords;
 }

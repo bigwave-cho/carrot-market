@@ -48,7 +48,7 @@ const CommunityPostDetail: NextPage = () => {
   );
   const [sendAnswer, { data: answerData, loading: answerLoading }] =
     useMutation(`/api/posts/${router.query.id}/answers`);
-
+  console.log(data);
   const onWonderClick = () => {
     if (!data) return;
     mutate(

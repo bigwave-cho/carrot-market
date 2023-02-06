@@ -1,8 +1,11 @@
 import FloatingButton from '@/components/floating-button';
 import Layout from '@/components/layout';
+import useCoords from '@/libs/client/useCoords';
 import { Post, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useForm, UseFormRegisterReturn } from 'react-hook-form';
 import useSWR from 'swr';
 
 interface PostWithUser extends Post {
@@ -18,11 +21,48 @@ interface PostsResponse {
   posts: PostWithUser[];
 }
 
+interface rangeForm {
+  range: number;
+}
+
 const Community: NextPage = () => {
-  const { data } = useSWR<PostsResponse>('/api/posts');
-  console.log(data);
+  const { latitude, longitude } = useCoords();
+  // 고정 범위아닌 레인지 정할 수 있도록 만들어보기.
+  const [range, setRange] = useState<number>(0.01);
+  const { register, handleSubmit } = useForm<rangeForm>();
+
+  // 내 위치를 쿼리에 담아 보내야 주변 위치 질문을 받을 수 있다.
+  const { data } = useSWR<PostsResponse>(
+    latitude && longitude
+      ? `/api/posts?latitude=${latitude}&longitude=${longitude}&range=${range}`
+      : null
+  );
+
+  const onValid = (form: rangeForm) => {
+    setRange(form.range);
+  };
   return (
     <Layout hasTabBar title="동네생활">
+      <form
+        // 범위 설정하는 form은 나중에 리팩터링해보자.
+        onSubmit={handleSubmit(onValid)}
+        className="flex flex-col items-end"
+      >
+        <label htmlFor="500m">
+          500m
+          <input {...register('range')} type="radio" value="0.01" id="500m" />
+        </label>
+        <label htmlFor="1km">
+          1km
+          <input {...register('range')} type="radio" value="0.02" id="1km" />
+        </label>
+        <button
+          className="rounded-lg border border-orange-500 px-2 hover:bg-orange-500 hover:text-white "
+          type="submit"
+        >
+          적용
+        </button>
+      </form>
       <div className="space-y-4 divide-y-[2px]">
         {data?.posts?.map((post) => (
           <Link key={post.id} href={`/community/${post.id}`}>
