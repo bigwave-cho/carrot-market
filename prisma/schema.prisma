@@ -18,12 +18,17 @@ model User{
  avatar     String?
  createdAt   DateTime  @default(now())
  updatedAt  DateTime  @updatedAt
- tokens     Token[]
- products   Product[]
- fav        Fav[]
- posts      Post[]
- answers Answer[]
- wonderings Wondering[]
+ tokens       Token[]
+ products     Product[]
+ fav           Fav[]
+ posts         Post[]
+ answers        Answer[]
+ wonderings     Wondering[]
+ writtenReviews  Review[]    @relation(name: "writtenReviews")
+ receivedReviews Review[]    @relation(name: "receivedReviews")
+ sale         Sale[]
+ purchase     Purchase[]
+ record       Record[]
 }
 
 model Token{
@@ -50,21 +55,13 @@ model Product {
   name   String 
   price  Int
   description String    @db.MediumText
-  // 몇명이 fav에 추가했는지.
   favs   Fav[]
+  sale         Sale[]
+  purchase     Purchase[]
+  record          Record[]
 }
 
-model Fav {
-  id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  @@index([userId])
-  product   Product      @relation(fields: [productId], references: [id], onDelete:Cascade)
-  productId Int
-  @@index([productId])
-  createdAt  DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
+
 
 model Post{
   id        Int        @id @default(autoincrement())
@@ -105,4 +102,77 @@ model Wondering {
   postId    Int
   @@index([postId])
 
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  review       String   @db.MediumText
+  //하나의 모델에 여러 필드를 릴레이션시킬 때는 name을 추가해서 구분한다.
+  createdBy    User     @relation(name: "writtenReviews", fields: [createdById], references: [id], onDelete: Cascade)
+  createdById  Int
+  createdFor   User     @relation(name: "receivedReviews", fields: [createdForId], references: [id], onDelete: Cascade)
+  createdForId Int
+  @@index([createdById])
+  @@index([createdForId])
+}
+
+// Fav, Sale, Purchase는 같은 필드를 가지고 있다.
+// enum을 사용하여 중복을 줄여보자.
+model Fav {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  @@index([userId])
+  product   Product      @relation(fields: [productId], references: [id], onDelete:Cascade)
+  productId Int
+  @@index([productId])
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Sale {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  @@index([userId])
+  product   Product      @relation(fields: [productId], references: [id], onDelete:Cascade)
+  productId Int
+  @@index([productId])
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Purchase {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  @@index([userId])
+  product   Product      @relation(fields: [productId], references: [id], onDelete:Cascade)
+  productId Int
+  @@index([productId])
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// kind로 세가지 모델을 찾을 수 있음.
+model Record {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+  kind      Kind
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([productId])
+}
+// 중복되는 모델들은 enum 으로 중복을 피할 수 있다.
+enum Kind {
+  Purchase
+  Sale
+  Fav
 }
