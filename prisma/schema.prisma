@@ -109,13 +109,15 @@ model Review {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   review       String   @db.MediumText
-  //하나의 모델에 여러 필드를 릴레이션시킬 때는 name을 추가해서 구분한다.
   createdBy    User     @relation(name: "writtenReviews", fields: [createdById], references: [id], onDelete: Cascade)
   createdById  Int
   createdFor   User     @relation(name: "receivedReviews", fields: [createdForId], references: [id], onDelete: Cascade)
   createdForId Int
   @@index([createdById])
   @@index([createdForId])
+  // 이미 존재하는 db에 새 필드를 추가하니 db를 날릴거냐 기본값을 줄것이냐 선택지가 나옴
+  // 디비를 날려도 되고 아닐 경우 Int? 로 옵셔널로 바꾸거나 아래처럼 디폴트값을 주면 됨.
+  score       Int      @default(1)      
 }
 
 // Fav, Sale, Purchase는 같은 필드를 가지고 있다.
@@ -156,7 +158,6 @@ model Purchase {
   updatedAt DateTime   @updatedAt
 }
 
-// kind로 세가지 모델을 찾을 수 있음.
 model Record {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -170,7 +171,6 @@ model Record {
   @@index([userId])
   @@index([productId])
 }
-// 중복되는 모델들은 enum 으로 중복을 피할 수 있다.
 enum Kind {
   Purchase
   Sale
