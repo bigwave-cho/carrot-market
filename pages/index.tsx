@@ -7,7 +7,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import useSWR from 'swr';
 
-interface ProductWithCount extends Product {
+export interface ProductWithCount extends Product {
   _count: {
     favs: number;
   };
@@ -34,7 +34,6 @@ const Home: NextPage = () => {
             id={product.id}
             title={product.name}
             price={product.price}
-            comments={1}
             hearts={product._count.favs}
           />
         ))}
