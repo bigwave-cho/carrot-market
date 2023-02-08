@@ -1,4 +1,3 @@
-import Item from '@/components/item';
 import Layout from '@/components/layout';
 import ProductList from '@/components/product-list';
 import { NextPage } from 'next';

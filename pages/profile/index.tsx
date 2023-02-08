@@ -19,7 +19,6 @@ interface ReviewsResponse {
 const Profile: NextPage = () => {
   const { user } = useUser();
   const { data } = useSWR<ReviewsResponse>('/api/reviews');
-  console.log(data);
   return (
     <Layout title="My" hasTabBar>
       <div className="py-10 px-4">
