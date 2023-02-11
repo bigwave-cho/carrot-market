@@ -37,6 +37,7 @@ const Enter: NextPage = () => {
     setMethod('email');
     reset();
   };
+
   const onPhoneClick = () => {
     setMethod('phone');
     reset();
@@ -53,6 +54,7 @@ const Enter: NextPage = () => {
   };
 
   const router = useRouter();
+
   useEffect(() => {
     if (tokenData?.ok) {
       router.push('/');

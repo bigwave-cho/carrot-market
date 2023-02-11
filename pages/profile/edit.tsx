@@ -1,6 +1,7 @@
 import Button from '@/components/button';
 import Input from '@/components/input';
 import Layout from '@/components/layout';
+import useMutation from '@/libs/client/useMutation';
 import useUser from '@/libs/client/useUser';
 // import useUser from '@/libs/client/useUser';
 import type { NextPage } from 'next';
@@ -11,42 +12,59 @@ import useSWR from 'swr';
 interface EditProfileForm {
   email?: string;
   phone?: string;
+  name?: string;
   formErrors?: string;
 }
 
-const EditProfile: NextPage = () => {
-  // useUser는 user의 로그인 여부를 확인하는 안전장치이기 때문에
-  // 모든 페이지(enter 제외)에 꼭 필요!
-  // _app에 추가해서 리팩토링할 수 있을듯.
-  const { user } = useUser();
+interface EditProfileResponse {
+  ok: boolean;
+  error?: string;
+}
 
-  //setValue : 값 설정 함수
+const EditProfile: NextPage = () => {
+  const { user } = useUser();
   const {
     register,
     setValue,
     handleSubmit,
     setError,
-    //onValid함수의 setError에서 정한 에러
     formState: { errors },
   } = useForm<EditProfileForm>();
+
   useEffect(() => {
-    //name이 email인 input에 두번째 인자 값 설정.
-    if (user?.email) {
-      setValue('email', user?.email);
-    }
-    if (user?.phone) {
-      setValue('phone', user?.phone);
-    }
+    if (user?.name) setValue('name', user?.name);
+    if (user?.email) setValue('email', user?.email);
+    if (user?.phone) setValue('phone', user?.phone);
   }, [user, setValue]);
 
-  const onValid = ({ email, phone }: EditProfileForm) => {
-    //두 요소가 다 비었을 경우 에러 발생시키기
-    if (!email && !phone) {
-      setError('formErrors', {
+  const [editProfile, { data, loading }] =
+    useMutation<EditProfileResponse>(`/api/users/me`);
+
+  const onValid = ({ email, phone, name }: EditProfileForm) => {
+    if (loading) return;
+    if (!email && !phone && !name) {
+      return setError('formErrors', {
         message: 'Email or Phone number are required. Choose one!',
       });
     }
+    // 프론트단에서 email이나 phone 변경이 없으면 update 요청을 안보내게 하는 로직
+    // editProfile({
+    //   email: email !== user?.email ? email : '',
+    //   phone: phone !== user?.phone ? phone : '',
+    // });
+    // 대신 백엔드에서 처리하도록 해보자
+    editProfile({
+      email,
+      phone,
+      name,
+    });
   };
+
+  useEffect(() => {
+    if (data && !data.ok && data.error) {
+      setError('formErrors', { message: data.error });
+    }
+  }, [data, setError]);
 
   return (
     <Layout canGoBack>
@@ -67,6 +85,14 @@ const EditProfile: NextPage = () => {
           </label>
         </div>
         <Input
+          // 이름 변경 추가
+          register={register('name')}
+          required={false}
+          label="Name"
+          name="name"
+          type="text"
+        />
+        <Input
           register={register('email')}
           required={false}
           label="Email address"
@@ -86,7 +112,7 @@ const EditProfile: NextPage = () => {
             {errors.formErrors.message}
           </span>
         ) : null}
-        <Button text="Update profile" />
+        <Button text={loading ? 'Loading...' : 'Update profile'} />
       </form>
     </Layout>
   );
