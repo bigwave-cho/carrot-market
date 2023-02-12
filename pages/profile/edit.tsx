@@ -5,7 +5,7 @@ import useMutation from '@/libs/client/useMutation';
 import useUser from '@/libs/client/useUser';
 // import useUser from '@/libs/client/useUser';
 import type { NextPage } from 'next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 
@@ -13,6 +13,7 @@ interface EditProfileForm {
   email?: string;
   phone?: string;
   name?: string;
+  avatar?: FileList;
   formErrors?: string;
 }
 
@@ -29,6 +30,8 @@ const EditProfile: NextPage = () => {
     handleSubmit,
     setError,
     formState: { errors },
+    //watch는 모든 변경을 감지
+    watch,
   } = useForm<EditProfileForm>();
 
   useEffect(() => {
@@ -40,7 +43,7 @@ const EditProfile: NextPage = () => {
   const [editProfile, { data, loading }] =
     useMutation<EditProfileResponse>(`/api/users/me`);
 
-  const onValid = ({ email, phone, name }: EditProfileForm) => {
+  const onValid = ({ email, phone, name, avatar }: EditProfileForm) => {
     if (loading) return;
     if (!email && !phone && !name) {
       return setError('formErrors', {
@@ -60,17 +63,37 @@ const EditProfile: NextPage = () => {
     }
   }, [data, setError]);
 
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const avatar = watch('avatar');
+  useEffect(() => {
+    if (avatar && avatar.length > 0) {
+      const file = avatar[0];
+      //file을 url로 접근할 수 있도록 하는 메서드.
+      //blob:url  모두 써줘야 해당 사진을 브라우저에서 볼 수 있다.
+      //file 업로드 -> 브라우저 메모리에 저장 -> 해당 메모리 접근하는 url 생성
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  }, [avatar]);
+
   return (
     <Layout canGoBack>
       <form onSubmit={handleSubmit(onValid)} className="space-y-4 py-10 px-4">
         <div className="flex items-center space-x-3">
-          <div className="h-14 w-14 rounded-full bg-slate-500" />
+          {avatarPreview ? (
+            <img
+              src={avatarPreview}
+              className="h-14 w-14 rounded-full bg-slate-500"
+            />
+          ) : (
+            <div className="h-14 w-14 rounded-full bg-slate-500" />
+          )}
           <label
             htmlFor="picture"
             className="cursor-pointer rounded-md border border-gray-300 py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
           >
             Change
             <input
+              {...register('avatar')}
               id="picture"
               type="file"
               className="hidden"

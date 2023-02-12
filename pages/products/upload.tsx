@@ -88,25 +88,3 @@ const Upload: NextPage = () => {
 };
 
 export default Upload;
-/*
-Cloudflare란?
-(클라우드를 위해 만들어진 전역 네트워크)
-Cloudflare는 인터넷에 연결하는 모든 것을 안전하고 비밀을 유지하면서 신속하고 안정적으로 연결하도록 설계된 전역 네트워크입니다.
-https://www.cloudflare.com/ko-kr/products/cloudflare-images/
-
-Cloudflare Images
-대규모로 이미지를 저장, 크기 조정, 최적화하는 하나의 API
-Cloudflare Images는 이미지 인프라를 구축하고 유지하는 효율적인 솔루션을 제공합니다. 하나의 통합 제품을 이용해 이미지를 대규모로 저장, 크기 조정, 최적화합니다.
-
-1. 이미지 저장
-아무리 많은 이미지라도 Cloudflare Images에 저장할 수 있습니다.
-
-2. 이미지 크기 조정 및 최적화
-보관 및 크기 조정의 추가 비용 없이 모든 이미지를 조정할 수 있습니다.
-
-3. 전달
-전세계 Cloudflare 데이터 센터에서 이미지를 전달합니다.
-
-Cloudflare 회원가입
-https://dash.cloudflare.com/sign-up
-*/
