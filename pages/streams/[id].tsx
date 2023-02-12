@@ -5,7 +5,7 @@ import useUser from '@/libs/client/useUser';
 import { Stream as StreamType } from '@prisma/client';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 
@@ -31,17 +31,13 @@ interface MessageForm {
 }
 
 const Stream: NextPage = () => {
-  // 메시지 주인 구별하기 위함
+  const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<MessageForm>();
-
-  // 중요! nextjs, api 등을 이용한 실시간 구현은 이것만으로는 불가
-  // 서버리스이기 때문에 실시간은 서버와의 지속적인 연결이 필요함.
   const { data, mutate } = useSWR<StreamResponse>(
     router.query.id ? `/api/streams/${router.query.id}` : null,
     {
-      //fetch 간격을 1초로 설정해서 가짜 실시간을 만듦.
       refreshInterval: 1000,
     }
   );
@@ -50,11 +46,13 @@ const Stream: NextPage = () => {
     `/api/streams/${router.query.id}/messages`
   );
 
+  useEffect(() => {
+    scrollRef?.current?.scrollIntoView();
+  }, [data]);
+
   const onValid = (form: MessageForm) => {
     if (loading) return;
     reset();
-    // 패치를 메시지 보낼 때마다 하는 방식은 느림.
-    // 그래서 캐싱된 데이터를 수정하는 방식으로 ㄱㄱ
     mutate(
       (prev) =>
         prev &&
@@ -88,7 +86,7 @@ const Stream: NextPage = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Live Chat</h2>
-          <div className="h-[50vh] space-y-4 overflow-y-scroll py-10  px-4 pb-16">
+          <div className="h-[50vh] space-y-4 overflow-y-scroll px-4  pt-10 pb-4">
             {data?.stream.messages.map((message) => (
               <Message
                 key={message.id}
@@ -96,6 +94,7 @@ const Stream: NextPage = () => {
                 reversed={message.user.id === user?.id}
               />
             ))}
+            <div className="h-0" ref={scrollRef} />
           </div>
           <div className="fixed inset-x-0 bottom-0  bg-white py-2">
             <form
