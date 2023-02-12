@@ -47,12 +47,6 @@ const EditProfile: NextPage = () => {
         message: 'Email or Phone number are required. Choose one!',
       });
     }
-    // 프론트단에서 email이나 phone 변경이 없으면 update 요청을 안보내게 하는 로직
-    // editProfile({
-    //   email: email !== user?.email ? email : '',
-    //   phone: phone !== user?.phone ? phone : '',
-    // });
-    // 대신 백엔드에서 처리하도록 해보자
     editProfile({
       email,
       phone,

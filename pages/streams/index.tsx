@@ -9,7 +9,7 @@ const Live: NextPage = () => {
       <div className="space-y-4 divide-y-[1px]">
         {[1, 2, 3, 4].map((_, i) => {
           return (
-            <Link className="block" key={i} href={`/live/${i}`}>
+            <Link className="block" key={i} href={`/streams/${i}`}>
               <div className="space-y-4 px-4 pt-4">
                 <div className="aspect-video w-full rounded-md bg-slate-300 shadow-sm" />
                 <h3 className="mt-4 block text-lg text-gray-700">
@@ -19,7 +19,7 @@ const Live: NextPage = () => {
             </Link>
           );
         })}
-        <FloatingButton href="/live/create">
+        <FloatingButton href="/streams/create">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

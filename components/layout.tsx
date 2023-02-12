@@ -125,11 +125,11 @@ export default function Layout({
           <Link
             className={cls(
               'flex flex-col items-center space-y-2 transition-colors',
-              router.pathname === '/live'
+              router.pathname === '/streams'
                 ? 'text-orange-500 hover:text-orange-400'
                 : 'transition-colors hover:text-gray-500'
             )}
-            href="/live"
+            href="/streams"
           >
             <svg
               className="h-6 w-6"

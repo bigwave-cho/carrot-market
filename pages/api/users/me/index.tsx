@@ -27,8 +27,7 @@ async function handler(
         id: user?.id,
       },
     });
-    // 백엔드에서 변경된 것 체크하고 업데이트 요청 보내기
-    // 세션에 저장된 아이디와 해당 유저 정보를 가져와서 비교
+
     if (email && email !== currentUser?.email) {
       const alreadyExists = Boolean(
         await client.user.findUnique({
