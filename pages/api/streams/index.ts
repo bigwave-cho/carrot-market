@@ -29,10 +29,8 @@ async function handler(
   }
   if (req.method === 'GET') {
     const streams = await client.stream.findMany({
-      //가져올 데이터 개수 정하기
       take: 10,
-      // skip: 첫 n개 건너뛰기
-      skip: 10,
+      // skip: 10,
     });
     res.json({ ok: true, streams });
   }

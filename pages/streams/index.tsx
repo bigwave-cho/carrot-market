@@ -10,9 +10,7 @@ interface StreamsResponse {
   streams: Stream[];
 }
 const Streams: NextPage = () => {
-  //Stream 페이지네이션 위해 쿼리로 전달.
-  //백엔드 페이지 0 = 프론트 페이지 -1
-  //개수 :  pageSize = 25  -> take:25, skip : backend page * 25
+  // 추후 페이지네이션 구현해보기.
   const { data } = useSWR<StreamsResponse>(`/api/streams?page=1`);
 
   return (
