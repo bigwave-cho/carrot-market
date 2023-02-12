@@ -1,22 +1,61 @@
 import Layout from '@/components/layout';
 import Message from '@/components/message';
-import { Stream } from '@prisma/client';
+import useMutation from '@/libs/client/useMutation';
+import useUser from '@/libs/client/useUser';
+import { Stream as StreamType } from '@prisma/client';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
+
+interface StremaMessage {
+  message: string;
+  id: number;
+  user: {
+    avatar?: string;
+    id: number;
+  };
+}
+interface StreamWithMessages extends StreamType {
+  messages: StremaMessage[];
+}
 
 interface StreamResponse {
   ok: true;
-  stream: Stream;
+  stream: StreamWithMessages;
+}
+
+interface MessageForm {
+  message: string;
 }
 
 const Stream: NextPage = () => {
+  // 메시지 주인 구별하기 위함
+  const { user } = useUser();
   const router = useRouter();
-
-  const { data } = useSWR<StreamResponse>(
+  const { register, handleSubmit, reset } = useForm<MessageForm>();
+  const { data, mutate } = useSWR<StreamResponse>(
     router.query.id ? `/api/streams/${router.query.id}` : null
   );
 
+  const [sendMessage, { loading, data: sendMessageData }] = useMutation(
+    `/api/streams/${router.query.id}/messages`
+  );
+
+  const onValid = (form: MessageForm) => {
+    if (loading) return;
+    reset();
+    sendMessage(form);
+  };
+
+  useEffect(() => {
+    //메시지를 보냈을 때 화면에 메시지 업데이트 하는 첫 번째 방법
+    //stream 페치 재요청(메시지보낼 때마다 패치를 하게 됨.)
+    if (sendMessageData && sendMessageData.ok) {
+      mutate();
+    }
+  }, [sendMessageData, mutate]);
   return (
     <Layout canGoBack>
       <div className=" space-y-4 py-10 px-4 ">
@@ -33,13 +72,21 @@ const Stream: NextPage = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Live Chat</h2>
           <div className="h-[50vh] space-y-4 overflow-y-scroll py-10  px-4 pb-16">
-            <Message message="Hi how much are you selling them for?" />
-            <Message message="I want ￦20,000" reversed />
-            <Message message="미쳤어" />
+            {data?.stream.messages.map((message) => (
+              <Message
+                key={message.id}
+                message={message.message}
+                reversed={message.user.id === user?.id}
+              />
+            ))}
           </div>
           <div className="fixed inset-x-0 bottom-0  bg-white py-2">
-            <div className="relative mx-auto flex w-full  max-w-md items-center">
+            <form
+              onSubmit={handleSubmit(onValid)}
+              className="relative mx-auto flex w-full  max-w-md items-center"
+            >
               <input
+                {...register('message', { required: true })}
                 type="text"
                 className="w-full rounded-full border-gray-300 pr-12 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500"
               />
@@ -48,7 +95,7 @@ const Stream: NextPage = () => {
                   &rarr;
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

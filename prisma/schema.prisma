@@ -200,7 +200,7 @@ model Message {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   @@index([userId])
-  messages  String  @db.MediumText
+  message  String  @db.MediumText
   stream      Stream     @relation(fields: [streamId], references: [id], onDelete: Cascade)
   streamId    Int
   @@index([streamId])
