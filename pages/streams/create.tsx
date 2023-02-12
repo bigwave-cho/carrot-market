@@ -48,7 +48,8 @@ const Create: NextPage = () => {
           required
         />
         <Input
-          register={register('price', { required: true })}
+          //valueAsNumber : 입력값을 숫자로 반환하는 옵션!
+          register={register('price', { required: true, valueAsNumber: true })}
           name="price"
           label="Price"
           kind="price"

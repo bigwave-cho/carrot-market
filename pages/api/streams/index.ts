@@ -16,7 +16,7 @@ async function handler(
     const stream = await client.stream.create({
       data: {
         name,
-        price: +price,
+        price: price,
         description,
         user: {
           connect: {
@@ -26,6 +26,10 @@ async function handler(
       },
     });
     res.json({ ok: true, stream });
+  }
+  if (req.method === 'GET') {
+    const streams = await client.stream.findMany();
+    res.json({ ok: true, streams });
   }
 }
 
