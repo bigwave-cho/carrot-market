@@ -35,8 +35,15 @@ const Stream: NextPage = () => {
   const { user } = useUser();
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<MessageForm>();
+
+  // 중요! nextjs, api 등을 이용한 실시간 구현은 이것만으로는 불가
+  // 서버리스이기 때문에 실시간은 서버와의 지속적인 연결이 필요함.
   const { data, mutate } = useSWR<StreamResponse>(
-    router.query.id ? `/api/streams/${router.query.id}` : null
+    router.query.id ? `/api/streams/${router.query.id}` : null,
+    {
+      //fetch 간격을 1초로 설정해서 가짜 실시간을 만듦.
+      refreshInterval: 1000,
+    }
   );
 
   const [sendMessage, { loading, data: sendMessageData }] = useMutation(
@@ -46,16 +53,26 @@ const Stream: NextPage = () => {
   const onValid = (form: MessageForm) => {
     if (loading) return;
     reset();
+    // 패치를 메시지 보낼 때마다 하는 방식은 느림.
+    // 그래서 캐싱된 데이터를 수정하는 방식으로 ㄱㄱ
+    mutate(
+      (prev) =>
+        prev &&
+        ({
+          ...prev,
+          stream: {
+            ...prev.stream,
+            messages: [
+              ...prev.stream.messages,
+              { id: Date.now(), message: form.message, user: { ...user } },
+            ],
+          },
+        } as any),
+      false
+    );
     sendMessage(form);
   };
 
-  useEffect(() => {
-    //메시지를 보냈을 때 화면에 메시지 업데이트 하는 첫 번째 방법
-    //stream 페치 재요청(메시지보낼 때마다 패치를 하게 됨.)
-    if (sendMessageData && sendMessageData.ok) {
-      mutate();
-    }
-  }, [sendMessageData, mutate]);
   return (
     <Layout canGoBack>
       <div className=" space-y-4 py-10 px-4 ">
