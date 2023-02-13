@@ -38,6 +38,10 @@ const EditProfile: NextPage = () => {
     if (user?.name) setValue('name', user?.name);
     if (user?.email) setValue('email', user?.email);
     if (user?.phone) setValue('phone', user?.phone);
+    if (user?.avatar)
+      setAvatarPreview(
+        `https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${user?.avatar}/public`
+      );
   }, [user, setValue]);
 
   const [editProfile, { data, loading }] =
@@ -53,23 +57,29 @@ const EditProfile: NextPage = () => {
     //avatar가 form 데이터에 있고 파일 렝스가 1 이상일 때
     if (avatar && avatar.length > 0 && user) {
       // CF에 URL 요청
-      const { id, uploadURL } = await (await fetch(`/api/files`)).json();
+      const { uploadURL } = await (await fetch(`/api/files`)).json();
       console.log(uploadURL);
 
       // 받은 url로 파일 업로드할 form 만들기(CF docs 참고)
       const form = new FormData();
       form.append('file', avatar[0], user?.id.toString());
-      await fetch(uploadURL, {
-        method: 'POST',
-        body: form,
+      const {
+        result: { id },
+      } = await (
+        await fetch(uploadURL, {
+          method: 'POST',
+          body: form,
+        })
+      ).json();
+      //업로드하면 해당 파일에 접근 가능한 id를 응답줌.
+      console.log(id);
+
+      editProfile({
+        email,
+        phone,
+        name,
+        avatarId: id,
       });
-      return;
-      // editProfile({
-      //   email,
-      //   phone,
-      //   name,
-      //   //avatarUrl : CF URL
-      // });
     } else {
       editProfile({
         email,

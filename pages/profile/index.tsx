@@ -23,7 +23,17 @@ const Profile: NextPage = () => {
     <Layout title="My" hasTabBar>
       <div className="py-10 px-4">
         <div className="flex items-center space-x-3">
-          <div className="h-16 w-16 rounded-full bg-slate-500" />
+          {user?.avatar ? (
+            <img
+              //이미지 탭의 image Delivery URL 카피
+              //https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/<image_id>/<variant_name>
+              //variant_name -> public
+              src={`https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${user?.avatar}/public`}
+              className="h-16 w-16 rounded-full bg-slate-500"
+            />
+          ) : (
+            <div className="h-16 w-16 rounded-full bg-slate-500" />
+          )}
           <div className="flex flex-col">
             <span className="font-medium text-gray-900">{user?.name}</span>
             <Link href="/profile/edit">
