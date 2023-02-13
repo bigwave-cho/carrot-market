@@ -43,18 +43,40 @@ const EditProfile: NextPage = () => {
   const [editProfile, { data, loading }] =
     useMutation<EditProfileResponse>(`/api/users/me`);
 
-  const onValid = ({ email, phone, name, avatar }: EditProfileForm) => {
+  const onValid = async ({ email, phone, name, avatar }: EditProfileForm) => {
     if (loading) return;
     if (!email && !phone && !name) {
       return setError('formErrors', {
         message: 'Email or Phone number are required. Choose one!',
       });
     }
-    editProfile({
-      email,
-      phone,
-      name,
-    });
+    //avatar가 form 데이터에 있고 파일 렝스가 1 이상일 때
+    if (avatar && avatar.length > 0 && user) {
+      // CF에 URL 요청
+      const { id, uploadURL } = await (await fetch(`/api/files`)).json();
+      console.log(uploadURL);
+
+      // 받은 url로 파일 업로드할 form 만들기(CF docs 참고)
+      const form = new FormData();
+      form.append('file', avatar[0], user?.id.toString());
+      await fetch(uploadURL, {
+        method: 'POST',
+        body: form,
+      });
+      return;
+      // editProfile({
+      //   email,
+      //   phone,
+      //   name,
+      //   //avatarUrl : CF URL
+      // });
+    } else {
+      editProfile({
+        email,
+        phone,
+        name,
+      });
+    }
   };
 
   useEffect(() => {
