@@ -40,7 +40,7 @@ const EditProfile: NextPage = () => {
     if (user?.phone) setValue('phone', user?.phone);
     if (user?.avatar)
       setAvatarPreview(
-        `https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${user?.avatar}/public`
+        `https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${user?.avatar}/avatar`
       );
   }, [user, setValue]);
 
@@ -100,9 +100,7 @@ const EditProfile: NextPage = () => {
   useEffect(() => {
     if (avatar && avatar.length > 0) {
       const file = avatar[0];
-      //file을 url로 접근할 수 있도록 하는 메서드.
-      //blob:url  모두 써줘야 해당 사진을 브라우저에서 볼 수 있다.
-      //file 업로드 -> 브라우저 메모리에 저장 -> 해당 메모리 접근하는 url 생성
+
       setAvatarPreview(URL.createObjectURL(file));
     }
   }, [avatar]);

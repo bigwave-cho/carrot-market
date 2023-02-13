@@ -24,11 +24,14 @@ const Profile: NextPage = () => {
       <div className="py-10 px-4">
         <div className="flex items-center space-x-3">
           {user?.avatar ? (
+            //img를 그대로 사용하면 이미지의 리사이징 없이 그대로 가져와서 느려짐
+            //공식문서 Resize images참고
+            //20개까지의 variant를 만들 수 있고 기본은 public
+            //scaledown - 비율 그대로 이미지 크기 감소
+            //crop - 비율 설정한대로.
+            //pad - 비율 그대로 설정 사이즈에 들어가도록 패딩줘서 이미지 리사이즈
             <img
-              //이미지 탭의 image Delivery URL 카피
-              //https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/<image_id>/<variant_name>
-              //variant_name -> public
-              src={`https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${user?.avatar}/public`}
+              src={`https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${user?.avatar}/avatar`}
               className="h-16 w-16 rounded-full bg-slate-500"
             />
           ) : (

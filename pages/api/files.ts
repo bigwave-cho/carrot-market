@@ -1,15 +1,8 @@
-/*
-  1. /api/files로 요청
-  2. Cloudflare 빈 URL 응답
-  3. 해당 URL을 이용하여 파일 업로드
-  */
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import client from '@/libs/server/client';
 import withHandler, { ResponseType } from '@/libs/server/withHandler';
 import { withApiSession } from '@/libs/server/withSession';
 
-// 프로필의 리뷰 가져오기
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
