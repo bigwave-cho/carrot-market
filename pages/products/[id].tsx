@@ -2,7 +2,7 @@ import Button from '@/components/button';
 import Layout from '@/components/layout';
 import useMutation from '@/libs/client/useMutation';
 import useUser from '@/libs/client/useUser';
-import { cls } from '@/libs/client/utils';
+import { cls, imgFn } from '@/libs/client/utils';
 import { Product, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -35,20 +35,28 @@ const ItemDetail: NextPage = () => {
 
     toggleFav({});
   };
-
+  console.log(data?.product.image);
   return (
     <Layout canGoBack>
       <div className="px-4 py-4">
         <div className="mb-8">
-          <img
-            src={`https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${data?.product.image}/public`}
-            className="h-96 bg-slate-300"
-          />
-          <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
+          {data?.product.image ? (
             <img
-              src={`https://imagedelivery.net/eIv5P4hDW8zI1jHvbe5XNg/${data?.product.user.avatar}/avatar`}
-              className="h-12 w-12 rounded-full bg-slate-300"
+              src={imgFn(data?.product.image, 'public')}
+              className="h-96 w-full bg-slate-300"
             />
+          ) : (
+            <div className="h-96 bg-slate-300" />
+          )}
+          <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
+            {data?.product.user.avatar ? (
+              <img
+                src={imgFn(data?.product.user.avatar, 'avatar')}
+                className="h-12 w-12 rounded-full bg-slate-300"
+              />
+            ) : (
+              <div className="h-12 w-12 rounded-full bg-slate-300" />
+            )}
             <div>
               <p className="text-sm font-medium text-gray-700">
                 {data?.product?.user.name}
