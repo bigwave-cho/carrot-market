@@ -15,16 +15,6 @@ export default function Item({ title, price, hearts, id, img }: ItemProps) {
   console.log(img);
   return (
     <Link href={`/products/${id}`}>
-      <Image
-        //Image 이용해서 local img를 생성하고 브라우저에서 요소를 살펴보면
-        //img 뿐만 아니라 감싸는 span들도 생성됨을 확인
-        //또한 url을 확인할 수 있는데 이는 nextjs가 이미지를 압축하고 해당 압축된 파일을 요청하는
-        // img 전용 api를 나타냄. url~~~ 맨끝 /숫자 는 퀄리티를 나타냄. (%)
-        src={church}
-        placeholder="blur"
-        alt="img"
-        quality={100} // 기본값 75
-      ></Image>
       <div className="flex cursor-pointer justify-between border-b px-4 pb-4">
         <div className="flex space-x-4">
           <img

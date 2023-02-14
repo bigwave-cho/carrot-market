@@ -5,6 +5,7 @@ import useUser from '@/libs/client/useUser';
 import { cls, imgFn } from '@/libs/client/utils';
 import { Product, User } from '@prisma/client';
 import type { NextPage } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useSWR, { useSWRConfig } from 'swr';
@@ -35,25 +36,42 @@ const ItemDetail: NextPage = () => {
 
     toggleFav({});
   };
-  console.log(data?.product.image);
+
   return (
     <Layout canGoBack>
       <div className="px-4 py-4">
         <div className="mb-8">
           {data?.product.image ? (
-            <img
-              src={imgFn(data?.product.image, 'public')}
-              className="h-96 w-full bg-slate-300"
-            />
+            <div className="relative pb-80">
+              <Image
+                //https://fe-developers.kakaoent.com/2022/220714-next-image/ 잘 정리된 카카오 기술 블로그
+                //리모트 이미지의 경우 넥스트JS가 빌드할 때는 정보를 모르기 때문에
+                //설정이 더 필요함.
+                src={imgFn(data?.product.image, 'public')}
+                className="h-96 w-full bg-slate-300" //object-fill 등도 가능
+                fill // fill: width height 없이 relative인 부모 컨테이너에 맞게 크기 조정
+                //Image의 경우 absolute인 것을 명심. 따라서 relative인 컨테이너로 크기 조정 가능
+                alt="image"
+                //리모트 이미지는 blur이미지를 직접 설정해줘야함
+                //blurDataURL=""
+              />
+            </div>
           ) : (
             <div className="h-96 bg-slate-300" />
           )}
           <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
             {data?.product.user.avatar ? (
-              <img
-                src={imgFn(data?.product.user.avatar, 'avatar')}
-                className="h-12 w-12 rounded-full bg-slate-300"
-              />
+              <div
+                //Next가 CF에 이미지 요청 -> 48x48 이미지로 재생성
+                className="relative h-[48px] w-[48px]"
+              >
+                <Image
+                  src={imgFn(data?.product.user.avatar, 'avatar')}
+                  className="rounded-full bg-slate-300"
+                  alt="image"
+                  fill
+                />
+              </div>
             ) : (
               <div className="h-12 w-12 rounded-full bg-slate-300" />
             )}
