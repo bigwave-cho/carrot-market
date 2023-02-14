@@ -8,6 +8,7 @@ import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 
 interface ProductWithUser extends Product {
@@ -20,15 +21,22 @@ interface ItemDetailResponse {
   relatedProducts: Product[];
   isLiked: boolean;
 }
+
+interface ChatRoomResponse {
+  ok: boolean;
+  chatRoomId: string;
+}
+
 const ItemDetail: NextPage = () => {
   const { user, isLoading } = useUser();
-
   const { mutate } = useSWRConfig();
   const router = useRouter();
   const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
-  const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
+  const [toggleFav] = useMutation<ChatRoomResponse>(
+    `/api/products/${router.query.id}/fav`
+  );
   const onFavClick = () => {
     if (!data) return;
 
@@ -37,6 +45,24 @@ const ItemDetail: NextPage = () => {
     toggleFav({});
   };
 
+  const [makeChatroom, { data: chatroomData, loading }] =
+    useMutation(`/api/chats`);
+  const onClick = () => {
+    if (loading) return;
+    console.log('hi');
+    makeChatroom({
+      productId: data?.product.id,
+      sellerId: data?.product.userId,
+    });
+  };
+
+  useEffect(() => {
+    console.log(chatroomData);
+    if (chatroomData && chatroomData.ok) {
+      router.push(`/chats/${chatroomData.chatroomId}`);
+    }
+  }, [chatroomData, router]);
+
   return (
     <Layout canGoBack>
       <div className="px-4 py-4">
@@ -44,16 +70,10 @@ const ItemDetail: NextPage = () => {
           {data?.product.image ? (
             <div className="relative pb-80">
               <Image
-                //https://fe-developers.kakaoent.com/2022/220714-next-image/ 잘 정리된 카카오 기술 블로그
-                //리모트 이미지의 경우 넥스트JS가 빌드할 때는 정보를 모르기 때문에
-                //설정이 더 필요함.
                 src={imgFn(data?.product.image, 'public')}
-                className="h-96 w-full bg-slate-300" //object-fill 등도 가능
-                fill // fill: width height 없이 relative인 부모 컨테이너에 맞게 크기 조정
-                //Image의 경우 absolute인 것을 명심. 따라서 relative인 컨테이너로 크기 조정 가능
+                className="h-96 w-full bg-slate-300"
+                fill
                 alt="image"
-                //리모트 이미지는 blur이미지를 직접 설정해줘야함
-                //blurDataURL=""
               />
             </div>
           ) : (
@@ -61,10 +81,7 @@ const ItemDetail: NextPage = () => {
           )}
           <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
             {data?.product.user.avatar ? (
-              <div
-                //Next가 CF에 이미지 요청 -> 48x48 이미지로 재생성
-                className="relative h-[48px] w-[48px]"
-              >
+              <div className="relative h-[48px] w-[48px]">
                 <Image
                   src={imgFn(data?.product.user.avatar, 'avatar')}
                   className="rounded-full bg-slate-300"
@@ -112,7 +129,7 @@ const ItemDetail: NextPage = () => {
               </div>
             )}
             <div className="flex items-center justify-between space-x-2">
-              <Button large text="Talk to seller"></Button>
+              <Button onClick={onClick} large text="Talk to seller" />
               <button
                 onClick={onFavClick}
                 className={cls(
