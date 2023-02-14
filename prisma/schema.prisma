@@ -18,21 +18,23 @@ model User{
  avatar     String?
  createdAt   DateTime  @default(now())
  updatedAt  DateTime  @updatedAt
- tokens       Token[]
- products     Product[]
- fav           Fav[]
- posts         Post[]
- answers        Answer[]
- wonderings     Wondering[]
- writtenReviews  Review[]    @relation(name: "writtenReviews")
- receivedReviews Review[]    @relation(name: "receivedReviews")
- sale         Sale[]
- purchase     Purchase[]
- record       Record[]
- streams       Stream[]
- messages      Message[]
-
-}
+ tokens           Token[]
+ products         Product[]
+ fav              Fav[]
+ posts            Post[]
+ answers          Answer[]
+ wonderings       Wondering[]
+ writtenReviews   Review[]     @relation(name: "writtenReviews")
+ receivedReviews  Review[]     @relation(name: "receivedReviews")
+ sale             Sale[]
+ purchase         Purchase[]
+ record           Record[]
+ streams           Stream[]
+ messages          Message[]
+ hostChatRooms    Chatroom[]   @relation(name:"HostChatRoom")
+ guestChatRooms   Chatroom[]   @relation(name:"GuestChatRoom")
+ chatMessages     ChatMessage[]
+ }
 
 model Token{
   id        Int        @id @default(autoincrement())
@@ -204,4 +206,30 @@ model Message {
   stream      Stream     @relation(fields: [streamId], references: [id], onDelete: Cascade)
   streamId    Int
   @@index([streamId])
+}
+
+model Chatroom {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  host      User     @relation(name:"HostChatRoom",fields: [hostId], references: [id], onDelete: Cascade)
+  hostId    Int
+  guest      User     @relation(name:"GuestChatRoom",fields: [guestId], references: [id], onDelete: Cascade)
+  guestId    Int
+  @@index([hostId])
+  @@index([guestId])
+  chatMessage ChatMessage[]
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  message   String  @db.MediumText  
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+  @@index([userId])
+  chatroom Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
+  chatroomId  Int
+  @@index([chatroomId])
 }
