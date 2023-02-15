@@ -222,9 +222,9 @@ model Chatroom {
   guestId    Int
   @@index([hostId])
   @@index([guestId])
-  chatMessage ChatMessage[]
+  chatMessages ChatMessage[]
 }
-
+//ChatMessage 시작
 model ChatMessage {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())

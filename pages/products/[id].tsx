@@ -49,7 +49,6 @@ const ItemDetail: NextPage = () => {
     useMutation(`/api/chats`);
   const onClick = () => {
     if (loading) return;
-    console.log('hi');
     makeChatroom({
       productId: data?.product.id,
       sellerId: data?.product.userId,
@@ -57,7 +56,6 @@ const ItemDetail: NextPage = () => {
   };
 
   useEffect(() => {
-    console.log(chatroomData);
     if (chatroomData && chatroomData.ok) {
       router.push(`/chats/${chatroomData.chatroomId}`);
     }

@@ -15,7 +15,6 @@ async function handler(
     session: { user },
     query: { id },
   } = req;
-  console.log(Kind);
   let kind;
 
   if (id === 'fav') {

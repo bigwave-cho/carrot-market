@@ -12,15 +12,18 @@ interface ItemProps {
 }
 
 export default function Item({ title, price, hearts, id, img }: ItemProps) {
-  console.log(img);
   return (
     <Link href={`/products/${id}`}>
       <div className="flex cursor-pointer justify-between border-b px-4 pb-4">
         <div className="flex space-x-4">
-          <img
-            src={imgFn(img, 'avatar')}
-            className="h-20 w-20 rounded-md bg-gray-400"
-          />
+          <div className="relative h-[80px] w-[80px]">
+            <Image
+              src={imgFn(img, 'avatar')}
+              alt="productImg"
+              fill
+              className="h-20 w-20 rounded-md bg-gray-400"
+            />
+          </div>
           <div className="flex flex-col pt-2">
             <h3 className="text-sm font-medium text-gray-900">{title}</h3>
             <span className="mt-1 font-medium text-gray-900">${price}</span>

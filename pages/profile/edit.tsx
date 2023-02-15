@@ -58,7 +58,6 @@ const EditProfile: NextPage = () => {
     if (avatar && avatar.length > 0 && user) {
       // CF에 URL 요청
       const { uploadURL } = await (await fetch(`/api/files`)).json();
-      console.log(uploadURL);
 
       // 받은 url로 파일 업로드할 form 만들기(CF docs 참고)
       const form = new FormData();
@@ -72,7 +71,6 @@ const EditProfile: NextPage = () => {
         })
       ).json();
       //업로드하면 해당 파일에 접근 가능한 id를 응답줌.
-      console.log(id);
 
       editProfile({
         email,
