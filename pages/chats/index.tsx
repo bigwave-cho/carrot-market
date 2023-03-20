@@ -1,29 +1,32 @@
 import Layout from '@/components/layout';
 import useUser from '@/libs/client/useUser';
-import { Chatroom, User } from '@prisma/client';
+import { ChatMessage, Chatroom, User } from '@prisma/client';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import useSWR from 'swr';
 
-interface ChatroomWithUser {
+interface ChatroomsWithUser {
   chatroom: Chatroom;
   host: User;
   guest: User;
   id: number;
+  chatMessages: ChatMessage[];
 }
 
-interface ChatroomResponse {
+interface ChatroomsResponse {
   ok: boolean;
-  chatrooms: ChatroomWithUser[];
+  chatrooms: ChatroomsWithUser[];
 }
 
 const Chats: NextPage = () => {
   const { user } = useUser();
-  const { data } = useSWR<ChatroomResponse>(`/api/chats`);
+  const { data } = useSWR<ChatroomsResponse>(`/api/chats`);
+  // console.log(data);
   return (
     <Layout title="채팅" hasTabBar>
       <div className="divide-y-[1.5px]">
         {data?.chatrooms.map((chatroom) => {
+          console.log(chatroom.chatMessages[0].message);
           const chatWith =
             user?.id === chatroom?.host.id
               ? {
@@ -47,7 +50,8 @@ const Chats: NextPage = () => {
                 <div>
                   <p className=" text-gray-700">{chatWith.name}</p>
                   <p className="text-sm text-gray-500">
-                    내일 봐요 2시에! &rarr;
+                    {chatroom.chatMessages[0].message ?? '메시지가 없어요 :('}{' '}
+                    &rarr;
                   </p>
                 </div>
               </div>

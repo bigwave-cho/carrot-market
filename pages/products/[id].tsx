@@ -49,12 +49,15 @@ const ItemDetail: NextPage = () => {
     useMutation(`/api/chats`);
   const onClick = () => {
     if (loading) return;
+    if (!chatroomData?.ok) {
+      alert('본인에게 말을 걸 수 없쥬 ㅋ');
+      return;
+    }
     makeChatroom({
       productId: data?.product.id,
       sellerId: data?.product.userId,
     });
   };
-
   useEffect(() => {
     if (chatroomData && chatroomData.ok) {
       router.push(`/chats/${chatroomData.chatroomId}`);

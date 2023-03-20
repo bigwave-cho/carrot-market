@@ -50,6 +50,7 @@ async function handler(
           },
         },
       });
+
       res.json({
         ok: true,
         chatroomId: newChatRoom.id,
@@ -77,6 +78,13 @@ async function handler(
             id: true,
             avatar: true,
             name: true,
+          },
+        },
+        chatMessages: {
+          select: {
+            message: true,
+            createdAt: true,
+            userId: true,
           },
         },
       },

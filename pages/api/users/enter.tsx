@@ -34,21 +34,21 @@ async function handler(
   });
   // free 계정 잠시 사용 중지
   if (phone) {
-    // const message = await twilioClient.messages.create({
-    //   messagingServiceSid: process.env.TWILIO_MSID,
-    //   to: process.env.TWILIO_PHONE_NUMBER!,
-    //   body: `Your login token is ${payload}`,
-    // });
-    // console.log(message);
+    const message = await twilioClient.messages.create({
+      messagingServiceSid: process.env.TWILIO_MSID,
+      to: process.env.TWILIO_PHONE_NUMBER!,
+      body: `Your login token is ${payload}`,
+    });
+    console.log(message);
   } else if (email) {
-    // const email = await mail.send({
-    //   from: process.env.MY_EMAIL_ADDRESS!,
-    //   to: process.env.MY_EMAIL_ADDRESS,
-    //   subject: 'Verify mail',
-    //   text: `Your token is ${payload}`,
-    //   html: `<strong>Your token is ${payload}</strong>`,
-    // });
-    // console.log(email);
+    const email = await mail.send({
+      from: process.env.MY_EMAIL_ADDRESS!,
+      to: process.env.MY_EMAIL_ADDRESS,
+      subject: 'Verify mail',
+      text: `Your token is ${payload}`,
+      html: `<strong>Your token is ${payload}</strong>`,
+    });
+    console.log(email);
   }
 
   return res.json({

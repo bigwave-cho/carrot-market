@@ -1,6 +1,7 @@
 import FloatingButton from '@/components/floating-button';
 import Item from '@/components/item';
 import Layout from '@/components/layout';
+import useUser from '@/libs/client/useUser';
 // import useUser from '@/libs/client/useUser';
 import { Product } from '@prisma/client';
 import { NextPage } from 'next';
@@ -19,7 +20,7 @@ interface ProudctResponse {
 }
 
 const Home: NextPage = () => {
-  // const { user, isLoading } = useUser();
+  const { user, isLoading } = useUser();
 
   const { data } = useSWR<ProudctResponse>('/api/products');
   return (
@@ -28,7 +29,7 @@ const Home: NextPage = () => {
         <title>HOME</title>
       </Head>
       <div className="flex flex-col space-y-5 py-4">
-        {data?.products.map((product, i: number) => {
+        {data?.products?.map((product, i: number) => {
           return (
             <Item
               key={product.id}
